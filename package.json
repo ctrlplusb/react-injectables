@@ -5,10 +5,12 @@
   "main": "lib/react-injectables.js",
   "scripts": {
     "prebuild": "rm -rf lib && mkdir lib",
-    "build": "NODE_ENV=production $(npm bin)/webpack",
-    "commit": "$(npm bin)/git-cz",
-    "test": "$(npm bin)/mocha --compilers js:babel-register --recursive --require ./test/setup.js \"test/**/*.test.js\"",
-    "lint": "$(npm bin)/eslint src test",
+    "build": "NODE_ENV=production webpack",
+    "commit": "git-cz",
+    "test": "mocha --compilers js:babel-register --recursive --require ./test/setup.js \"test/**/*.test.js\"",
+    "coverage": "babel-node $(npm bin)/isparta cover $(npm bin)/_mocha -- -R spec --require ./test/setup.js",
+    "report-coverage": "cat ./coverage/lcov.info | codecov",
+    "lint": "eslint src",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   },
   "repository": {
@@ -48,6 +50,7 @@
     "eslint-plugin-mocha": "2.0.0",
     "eslint-plugin-react": "4.2.3",
     "ghooks": "1.1.1",
+    "isparta": "4.0.0",
     "jsdom": "8.3.0",
     "mocha": "2.4.5",
     "path": "0.12.7",

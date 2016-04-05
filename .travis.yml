@@ -18,4 +18,5 @@ script:
   - npm run test
   - npm run build
 after_success:
+  - npm run report-coverage
   - npm run semantic-release

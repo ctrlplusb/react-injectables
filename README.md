@@ -33,7 +33,7 @@ One option would be to use react-routers native capability to pass down multiple
 
 Enter Injectables.
 
-Injectables aims to provide you with a mechanism to explicity define a destination for injections, whilst also providing you with the capability to explicitly binding one of your components to inject into the desired injection destination.
+Injectables aims to provide you with a mechanism to explicity define an Injectable target and and Injector source component.  
 
 Fairy dust is involved, however, we attempt to keep things as un-magical as possible - explictness is the key.
 
@@ -149,7 +149,7 @@ As you can see it's all explicit, so you can follow the import references to fin
 
 You will need to repeat steps 2 - 4 for any set of Injectable targets and Injector sources you would like to create.  Again, this is to keep things as explicit as possible.
 
-## Things you should be aware of
+## Properties of Injectables and Injectors
 
 Here are a few basic properties you should be aware of:
 
@@ -160,6 +160,7 @@ Here are a few basic properties you should be aware of:
    * You can use the Injector higher order function to create multiple injector sources, all the unique elements will be passed through to the Injectable target.
    * Injectors are allowed to exist before any Injectable instances.  Once the Injectable instance is rendered then existing Injectors will have their injections rendered within the Injectable.
    * You can have multiple instances of an Injectable rendered in your app.  They will all recieve the same injected content from their respective Injectors. 
+   * You should create a new Injectable/Injector HOC pair (via the prepInjection function) for every Injectable target you would like.
 
 ## Examples
 

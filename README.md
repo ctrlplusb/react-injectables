@@ -153,13 +153,20 @@ You will need to repeat steps 2 - 4 for any set of Injectable targets and Inject
 
 Here are a few basic properties you should be aware of:
 
-   * All "injection" happens within the first render cycle by react-dom (if both an Injectable and Injector exist within the react dom tree).  This is intentionally to try and keep things as "uni-directional" / "input -> output" as possible.
-   * If an Injector is removed from the tree then it's injected elements will automatically be removed from the Injectable target.  
-   * Any new Injectors within the tree will automatically have their injected content rendered within the Injectable target. 
-   * Multiple instances of an Injector will not cause multiple instances of the injection element to be rendered within the Injectable target.  Only unique instances are passed through to the Injectable target.
-   * You can use the Injector higher order function to create multiple injector sources, all the unique elements will be passed through to the Injectable target.
-   * Injectors are allowed to exist before any Injectable instances.  Once the Injectable instance is rendered then existing Injectors will have their injections rendered within the Injectable.
+   * All injection happens within the initial render cycle by react-dom.  Injection does not cause a double render to occur.  This is a result of us trying to intentionally keep injection as "uni-directional" / "input -> output" as possible.
+
    * You can have multiple instances of an Injectable rendered in your app.  They will all recieve the same injected content from their respective Injectors. 
+
+   * You can create multiple Injectors using the Injector higher order function. The rendered Injectors shall have their injected elements collected and passed through to the Injectable target(s).  For example, you may want to pass in action buttons from different components into an InjectableActions component. 
+
+   * Multiple renders of the same Injector instance will not result in duplicate content being rendered within the Injectable target(s).  Only unique instances are passed through to the Injectable target(s).
+   
+   * If an Injector is removed from the tree then it's injected elements will automatically be removed from the Injectable target.  
+   
+   * Any new Injectors that are rendered into the tree will automatically have their injected content rendered within any rendered Injectable target(s). 
+   
+   * Injectors are allowed to be rendered before any Injectables.  Once a related Injectable instance is rendered then any content from existing Injectors will automatically be rendered by the newly rendered Injectable.
+   
    * You should create a new Injectable/Injector HOC pair (via the prepInjection function) for every Injectable target you would like.
 
 ## Examples

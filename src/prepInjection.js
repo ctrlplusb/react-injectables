@@ -1,10 +1,35 @@
 /* eslint-disable react/no-multi-comp */
 
 // Libraries and Utils.
-import React, { PropTypes, Component } from 'react';
+import React, { Children, PropTypes, Component } from 'react';
 import { containsUniq } from './utils';
 
 let injectablesIndex = 0;
+
+function KeyedComponent({ children }) {
+  return Children.only(children);
+}
+
+//
+/**
+ * :: [Element] -> [Element]
+ *
+ * Ensures the given react elements have 'key' properties on them.
+ *
+ * @param  prefix
+ *   The prefix for the keys.
+ * @param  items
+ *   The react elements.
+ *
+ * @return The keyed react elements.
+ */
+function keyedElements(prefix : string, items : Array<Object>) {
+  let index = 0;
+  return items.map(x => {
+    index++;
+    return <KeyedComponent key={`${prefix}_${index}`}>{x}</KeyedComponent>;
+  });
+}
 
 function createInjectable(config) {
   const { namespace } = config;
@@ -36,7 +61,7 @@ function createInjectable(config) {
       render() {
         return (
           <WrappedComponent
-            injected={this.state.injected}
+            injected={keyedElements(namespace, this.state.injected)}
             {...this.props}
           />
         );

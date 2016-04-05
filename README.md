@@ -23,19 +23,19 @@ Envision you have the following component tree:
 </App>
 ```
 	
-A fairly standard configuration, essentially you have a master application template which each of your routes get rendered in to.  This is handy as you get to share things like your Header, Menu, Footer across all your rendered routes without having to repeating all that code.  But what if you wanted to extend your base template with additional content that is specific to one of the routes being rendered?
+A fairly standard configuration, essentially you have a master application template which each of your routes get rendered in to.  This is handy as you get to share things like your Header, Menu, Footer across all your rendered routes without having to repeat all that code.  But what if you wanted to extend your base template with additional content that is specific to one of the routes being rendered?
 
-For example, there is a handy little `Sidebar` component.  Perhaps you would like an `MyBasketSummary` to be displayed in there whilst the user is viewing the `ProductsRoute`?  Or maybe you would like to inject a new `Button` or `Image` into the `Header` for one of your routes?
+For example, you'll notice the base template holds a handy little `Sidebar` component.  Perhaps you would like a `MyBasketSummary` to be rendered in there whilst the user is viewing the `ProductsRoute`?  Or maybe you would like to inject a new `Button` or `Image` into the `Header` for one of your routes?
 
 How could you solve these seemingly simple problems?
 
-One option would be to use react-routers native capability to pass down multiple named components for each of the routes into the base template. For the simple cases we recommend this approach, however, with complex applications having deeply nested routes and component structures this approach may be really difficult to implement.  
+One option would be to use react-routers native capability to pass down multiple named components for each of the routes into the base template. For the simple cases we recommend this approach, however, with complex applications having deeply nested routes and component structures this approach may be difficult to manage and could end up in complex props pass-throughs.  
 
 Enter Injectables.
 
 Injectables aims to provide you with a mechanism to explicity define a destination for injections, whilst also providing you with the capability to explicitly binding one of your components to inject into the desired injection destination.
 
-It attempts to keep things as un-magical as possible - explictness is the key.
+Fairy dust is involved, however, we attempt to keep things as un-magical as possible - explictness is the key.
 
 
 ## Usage
@@ -46,19 +46,21 @@ First install the library.
 
 ### Quick Start
     
-Here is a summary of what you need to do in order to inject content from one Component to another:
+Here is a summary of what you need to do in order to support the injection of content from one Component to another:
 
 
   1. Wrap your application with our `Provider`.
   2. Create a pair of `Injectable` and `Injector` higher order components using our `prepInjection()` function.
-  3. Wrap a component you would like to be injectable with the `Injectable` higher order component. For example: `export default Injectable(Header)`
-  4. Wrap a component you would like to inject content with the `Injector` higher order component, passing in the element that you wish to be injected.  For example: `export default Injector(<div>I will be injected</div>)(ProductPage)` 
+  3. Wrap the component you would like to be injectable with the `Injectable` higher order component. For example: `const InjectableHeader = Injectable(Header)`
+  4. Wrap a component you would like to be able to inject content with the `Injector` higher order component. This is also the point in which you declare the content to be injected.  For example: `const InjectorProductPage = Injector(<div>I will be injected</div>)(ProductPage)` 
     
 ### Full Tutorial 
+
+Ok, here's a more detailed run through with example code.
     
 __Step 1__    
     
-Somewhere very low down in your application wrap your components with our `Provider`.  This is the engine that will do all the heavy lifting for you. For example:
+Somewhere very low down in your application wrap your component tree with our `Provider`.  This is the engine that will do all the heavy lifting for you. For example:
 
 ```javascript
 import React from 'react';

@@ -139,11 +139,13 @@ You will need to repeat steps 2 - 4 for any set of Injectable targets and Inject
 
 Here are a few basic properties you should be aware of:
 
-   * All "injection" happens within the first render cycle by react-dom (if both an Injectable and Injector exist within the react dom tree).  
+   * All "injection" happens within the first render cycle by react-dom (if both an Injectable and Injector exist within the react dom tree).  This is intentionally to try and keep things as "uni-directional" / "input -> output" as possible.
    * If an Injector is removed from the tree then it's injected elements will automatically be removed from the Injectable target.  
    * Any new Injectors within the tree will automatically have their injected content rendered within the Injectable target. 
    * Multiple instances of an Injector will not cause multiple instances of the injection element to be rendered within the Injectable target.  Only unique instances are passed through to the Injectable target.
    * You can use the Injector higher order function to create multiple injector sources, all the unique elements will be passed through to the Injectable target.
+   * Injectors are allowed to exist before any Injectable instances.  Once the Injectable instance is rendered then existing Injectors will have their injections rendered within the Injectable.
+   * You can have multiple instances of an Injectable rendered in your app.  They will all recieve the same injected content from their respective Injectors. 
 
 ## Examples
 
@@ -154,4 +156,9 @@ At the moment there is only one example, using react-router.  Pull the source on
     npm run watch
     
 Browse to localhost:3000 to see it in action.
-    
+
+## Some other considerations.
+
+__I am using redux or another flux-like library__
+
+Then perhaps you should try and use their respective action flows in order to control the "injection" of your content in a manner that follows their uni-directional flows. 

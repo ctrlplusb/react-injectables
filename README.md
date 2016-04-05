@@ -74,6 +74,9 @@ ReactDOM.render((
  ), document.getElementById('app'));
 ```
 
+_Note:_ If you already have another component with the name of `Provider` in your app (think redux), then you can rename the import, like so:
+`import { Provider as InjectablesProvider } from 'react-injectables';`
+
 __Step 2 + 3__
 	 
 Now you need to create an Injectable Component.  We have a helper function that will provide you with two higher order component functions to aid you with this.

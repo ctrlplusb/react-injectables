@@ -11,14 +11,16 @@
 
 Envision you have the following component tree:
 
-	<App>
-		<Sidebar />
-		<Main>
-			<Header />
-			{renderedRouteContent}			
-			<Footer />
-		</Main>
-	</App>
+```html
+<App>
+	<Sidebar />
+	<Main>
+		<Header />
+		{renderedRouteContent}			
+		<Footer />
+	</Main>
+</App>
+```
 	
 A fairly standard configuration, essentially you have a master application template which each of your routes get rendered in to.  This is handy as you get to share things like your Header, Menu, Footer across all your rendered routes without having to repeating all that code.  But what if you wanted to extend your base template with additional content that is specific to one of the routes being rendered?
 
@@ -57,17 +59,19 @@ __Step 1__
     
 Somewhere very low down in your application wrap your components with our `Provider`.  This is the engine that will do all the heavy lifting for you. For example:
 
-    import React from 'react';
-    import ReactDOM from 'react-dom';
-    import { Provider } from 'react-injectables';
+```javascript
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { Provider } from 'react-injectables';
     
-    ReactDOM.render((
-    	<Provider>
-    		<Router>
-    			...
-    		</Router>
-    	</Provider>
-	 ), document.getElementById('app'));
+ReactDOM.render((
+	<Provider>
+		<Router>
+			...
+		</Router>
+	</Provider>
+ ), document.getElementById('app'));
+```
 
 __Step 2 + 3__
 	 
@@ -75,36 +79,38 @@ Now you need to create an Injectable Component.  We have a helper function that 
 
 Let's say that you would like to create a Header component that you could inject in to. You would do the following:
 
-    // ./src/components/InjectableHeader.js
-	 
-    import React, { PropTypes } from 'react';
-    import { prepInjection } from 'react-injectables';
+```javascript
+// ./src/components/InjectableHeader.js
+ 
+import React, { PropTypes } from 'react';
+import { prepInjection } from 'react-injectables';
 
-    // Create a new injectable configuration. Each call to prepInjection
-    // creates a unique set of Injectable and Injector higher order
-    // components. This allows us to avoid magic strings in your code.
-    const { Injectable, Injector } = prepInjection();
+// Create a new injectable configuration. Each call to prepInjection
+// creates a unique set of Injectable and Injector higher order
+// components. This allows us to avoid magic strings in your code.
+const { Injectable, Injector } = prepInjection();
 
-     // Note the prop named 'injected'.  This will contain any injected elements.
-    const Header = ({ injected }) => (
-      <div className="header">
-       {injected.length > 0 
-       	? injected 
-       	: <div>Nothing has been injected</div>}
-      </div>
-    );
-    Header.propTypes = {
-      injected: PropTypes.arrayOf(PropTypes.element)
-    };
+ // Note the prop named 'injected'.  This will contain any injected elements.
+const Header = ({ injected }) => (
+  <div className="header">
+   {injected.length > 0 
+   	? injected 
+   	: <div>Nothing has been injected</div>}
+  </div>
+);
+Header.propTypes = {
+  injected: PropTypes.arrayOf(PropTypes.element)
+};
 
-    // We export the Injector higher order component renamed as HeaderInjector to
-    // make it explicity what the target is for the injector.
-    export const HeaderInjector = Injector;
+// We export the Injector higher order component renamed as HeaderInjector to
+// make it explicity what the target is for the injector.
+export const HeaderInjector = Injector;
     
-    // We wrap our Header component definition with the Injectable higher order
-    // component call. This does all the wiring up for us. Any injections will
-    // be passed down to our component via the 'injected' prop.
-    export default Injectable(Header);
+// We wrap our Header component definition with the Injectable higher order
+// component call. This does all the wiring up for us. Any injections will
+// be passed down to our component via the 'injected' prop.
+export default Injectable(Header);
+```
     
 _Note:_ We recommend naming your component files appropriately to indicate that it is indeed an injectable component.  In the above case we named our component file as `InjectableHeader.js`  
     
@@ -114,18 +120,20 @@ Ok, so you have an `InjectableHeader` now, but you need to declare which compone
 
 Within the component you indentify for this purpose pull the `HeaderInjector` higher order component from your newly created `InjectableHeader` component. Then wrap the export of your component with this higher order function, making sure to pass in the content you would like to inject into the Header.
 
-    import React from 'react';
-    import { HeaderInjector } from './InjectableHeader';
+```javascript
+import React from 'react';
+import { HeaderInjector } from './InjectableHeader';
 
-    const PageOne = () => (
-      <div>
-        I am page one.
-      </div>
-    );
+const PageOne = () => (
+  <div>
+    I am page one.
+  </div>
+);
     
-    export default HeaderInjector([
-      <div>Injection from Page One</div>
-    ])(PageOne);
+export default HeaderInjector([
+  <div>Injection from Page One</div>
+])(PageOne);
+```
  
  ---
  

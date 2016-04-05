@@ -51,8 +51,8 @@ Here is a summary of what you need to do in order to support the injection of co
 
   1. Wrap your application with our `Provider`.
   2. Create a pair of `Injectable` and `Injector` higher order components using our `prepInjection()` function.
-  3. Wrap the component you would like to be injectable with the `Injectable` higher order component. For example: `const InjectableHeader = Injectable(Header)`
-  4. Wrap a component you would like to be able to inject content with the `Injector` higher order component. This is also the point in which you declare the content to be injected.  For example: `const InjectorProductPage = Injector(<div>I will be injected</div>)(ProductPage)` 
+  3. Wrap the component you would like to be recieve content with the `Injectable` higher order component. For example: `const InjectableHeader = Injectable(Header)`
+  4. Wrap a component you would like to produce content with the `Injector` higher order component. This is also the point in which you declare the content to be injected.  For example: `const InjectorProductPage = Injector(<div>I will be injected</div>)(ProductPage)` 
     
 ### Full Tutorial 
 

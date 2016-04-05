@@ -9,7 +9,7 @@
     "commit": "git-cz",
     "test": "mocha --compilers js:babel-register --recursive --require ./test/setup.js \"test/**/*.test.js\"",
     "coverage": "babel-node $(npm bin)/isparta cover $(npm bin)/_mocha -- -R spec --require ./test/setup.js",
-    "report-coverage": "cat ./coverage/lcov.info | codecov",
+    "report-coverage": "cat ./coverage/lcov.info | $(npm bin)/codecov",
     "lint": "eslint src",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   },

@@ -8,7 +8,7 @@
     "commit": "$(npm bin)/git-cz",
     "test": "$(npm bin)/mocha --compilers js:babel-register --recursive --require ./test/setup.js \"test/**/*.test.js\"",
     "lint": "$(npm bin)/eslint src test",
-    "semantic-release": "$(npm bin)/semantic-release pre && npm publish && $(npm bin)/semantic-release post"
+    "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   },
   "repository": {
     "type": "git",
@@ -27,8 +27,7 @@
     "url": "https://github.com/ctrlplusb/react-injectables/issues"
   },
   "homepage": "https://github.com/ctrlplusb/react-injectables#readme",
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "babel-cli": "6.6.5",
     "babel-core": "6.7.4",
@@ -53,7 +52,7 @@
     "path": "0.12.7",
     "react": "0.14.8",
     "react-dom": "0.14.8",
-    "semantic-release": "6.2.1",
+    "semantic-release": "^6.2.1",
     "sinon": "1.17.3",
     "sinon-chai": "2.8.0",
     "stats-webpack-plugin": "0.3.1",

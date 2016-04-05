@@ -33,7 +33,7 @@ One option would be to use react-routers native capability to pass down multiple
 
 Enter Injectables.
 
-Injectables aims to provide you with a mechanism to explicity define an Injectable target and and Injector source component.  
+Injectables aims to provide you with a mechanism to explicity define an Injectable target and Injector source component(s).  
 
 Fairy dust is involved, however, we attempt to keep things as un-magical as possible - explictness is the key.
 

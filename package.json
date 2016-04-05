@@ -42,6 +42,7 @@
     "babel-preset-stage-1": "6.5.0",
     "babel-register": "6.7.2",
     "chai": "3.5.0",
+    "codecov.io": "0.1.6",
     "commitizen": "2.7.6",
     "cz-conventional-changelog": "1.1.5",
     "eslint": "2.7.0",

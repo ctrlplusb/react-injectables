@@ -4,6 +4,8 @@ import { expect } from 'chai';
 import $ from 'teaspoon';
 
 describeWithDOM(`Given an Injectables configuration`, () => {
+  const { Provider, Injectable, Injector } = require(`../src/index.js`);
+
   let InjectableHeader;
   let Layout;
   let HeaderInjectingSectionOne;
@@ -11,8 +13,6 @@ describeWithDOM(`Given an Injectables configuration`, () => {
   let render;
 
   before(() => {
-    const { Provider, Injectable, Injector } = require(`../src/index.js`);
-
     render = elements => $(
       <Provider>
         {elements}
@@ -21,7 +21,6 @@ describeWithDOM(`Given an Injectables configuration`, () => {
 
     const Header = ({ injected }) => (
       <div id="Header">
-        <span>These are the injections:</span>
         {injected}
       </div>
     );
@@ -169,6 +168,29 @@ describeWithDOM(`Given an Injectables configuration`, () => {
         .length;
 
       expect(actual).to.equal(expected, `The injected content was not found.`);
+    });
+  });
+
+  describe(`When rendering a null/undefined from an Injector`, () => {
+    it(`Then nothing should be rendered`, () => {
+      const NullInjector = Injector({
+        to: InjectableHeader,
+        inject: () => null
+      })(() => <noscript />);
+
+      const rendered = render(
+        <Layout>
+          <NullInjector />
+        </Layout>
+      );
+
+      const actual = rendered
+        .find($.s`${InjectableHeader}`)
+        .find(`div[id=Header]`)
+        .children()
+        .length;
+
+      expect(actual).to.equal(0);
     });
   });
 });

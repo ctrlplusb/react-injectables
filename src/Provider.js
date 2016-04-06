@@ -1,5 +1,5 @@
 import { Children, Component, PropTypes } from 'react';
-import { compose, find, map, uniqBy, without, withoutAll } from './utils';
+import { compose, find, filter, map, uniqBy, without, withoutAll } from './utils';
 
 class InjectablesProvider extends Component {
   static childContextTypes = {
@@ -55,6 +55,7 @@ class InjectablesProvider extends Component {
     const { injectables, injections } = registration;
 
     const elements = compose(
+      filter(x => x !== null && x !== undefined),
       map(x => x.injector.getInjectElement()),
       uniqBy(`injectorId`)
     )(injections);

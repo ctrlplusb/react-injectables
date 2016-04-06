@@ -41,9 +41,11 @@ const Injectable = (WrappedComponent) => {
     }
 
     render() {
+      const keyed = keyedElements(`injected`, this.state.injected);
+
       return (
         <WrappedComponent
-          injected={keyedElements(`injected`, this.state.injected)}
+          injected={keyed}
           {...this.props}
         />
       );

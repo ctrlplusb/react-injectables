@@ -69,8 +69,8 @@ First install the library.
 To get going there are only 3 steps:
 
   1. Wrap your application with our `Provider`.
-  3. Wrap the component you would like to be recieve content with our `Injectable`. e.g. `Injectable(Sidebar)`
-  4. Wrap a component you would like to produce content with our `Injector`. e.g.: `Injector({ to: InjectableSidebar, inject: () => <MyBasketsView>)(ProductPage)` 
+  2. Wrap a component you would like to _recieve_ content with our `Injectable`. e.g. `Injectable(Sidebar)`
+  3. Wrap a component you would like to _produce_ content with our `Injector`. e.g.: `Injector({ to: InjectableSidebar, inject: () => <MyBasketsView>)(ProductPage)` 
     
 ### Full Tutorial 
 

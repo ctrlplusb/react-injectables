@@ -14,6 +14,7 @@ const Injector = (args: { to: Object, inject: Inject }) => {
     class InjectorComponent extends Component {
       static contextTypes = {
         registerInjector: PropTypes.func.isRequired,
+        updateInjector: PropTypes.func.isRequired,
         removeInjector: PropTypes.func.isRequired
       };
 
@@ -21,7 +22,26 @@ const Injector = (args: { to: Object, inject: Inject }) => {
         this.context.registerInjector({
           injectionId: to.injectionId,
           injectorId,
-          injector: this
+          injector: this,
+          inject: () => {
+            if (typeof inject === `function`) {
+              return inject(this.props);
+            }
+            return inject;
+          }
+        });
+      }
+
+      componentWillUpdate(nextProps) {
+        this.context.updateInjector({
+          injectionId: to.injectionId,
+          injector: this,
+          inject: () => {
+            if (typeof inject === `function`) {
+              return inject(nextProps);
+            }
+            return inject;
+          }
         });
       }
 
@@ -30,13 +50,6 @@ const Injector = (args: { to: Object, inject: Inject }) => {
           injectionId: to.injectionId,
           injector: this
         });
-      }
-
-      getInjectElement = () => {
-        if (typeof inject === `function`) {
-          return inject(this.props);
-        }
-        return inject;
       }
 
       render() {

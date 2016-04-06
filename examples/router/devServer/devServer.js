@@ -17,11 +17,11 @@ server.get(`*`, (req, res) => {
   res.sendFile(path.resolve(__dirname, `../public/index.html`));
 });
 
-server.listen(3001, `localhost`, (err) => {
+server.listen(3002, `localhost`, (err) => {
   if (err) {
     console.log(err); // eslint-disable-line no-console
     return;
   }
 
-  console.log(`Listening at http://localhost:3001`); // eslint-disable-line no-console
+  console.log(`Listening at http://localhost:3002`); // eslint-disable-line no-console
 });

@@ -11,7 +11,15 @@
 
 Tiny, and the only dependency is a peer dependency of React.
 
+### Warning
+
+I am actively developing this project whilst applying it to a production use-case.  This is exposing the limitations of the API pretty fast requiring that I do quick updates.  Expect the versions to bump excessively over the next couple of weeks, but I will stabilise it as quickly as I can.  I'm not a fan of 0.x.x beta releases and don't mind big numbers.  I like that each version I release clearly indicates breaking changes.  This message will disappear as soon as I believe the API will remain stable for an extended period of time. 
+
 ## What is this for?
+
+Placeholders, Modals, etc etc.
+
+## Overview
 
 Envision you have the following component tree:
 
@@ -102,22 +110,17 @@ __Step 2__
 Now you need to create an Injectable Component.  Let's say that you would like to create a Sidebar component that you could inject in to. You would do the following:
 
 ```javascript
-// ./src/components/InjectableHeader.js
- 
 import React, { PropTypes } from 'react';
 import { Injectable } from 'react-injectables';
 
- // Note the prop named 'injected'.  This will contain any injected elements.
-const Sidebar = ({ injected }) => (
-  <div className="header">
-   {injected.length > 0 
-   	? injected 
-   	: <div>Nothing has been injected</div>}
-  </div>
-);
-Sidebar.propTypes = {
-  injected: PropTypes.arrayOf(PropTypes.element)
-};
+// Note the 'injected' prop.  This will contain any injected elements.
+function Sidebar({ injected }) {
+  return (
+    <div className="header">
+     {injected}
+    </div>
+  );
+}
     
 // We wrap our Sidebar component with Injectable. This does all the wiring up for us.
 export default Injectable(Sidebar);
@@ -140,10 +143,16 @@ import BasketViewPage from './BasketViewPage';
 class ProductsPage extends Component {
    ....
 }
+
+// We are using this stateless component as our inject resolver.
+// It will receive any props that will be passed into ProductsPage, including updated ones.
+function Inject(props) {
+  return (<BasketViewPage focusOnProductId={props.productId} />);
+}
     
 export default Injector({
-  to: InjectableSidebar,
-  inject: function (props) { return (<BasketViewPage focusOnProductId={props.productId} />); }
+  to: InjectableSidebar,  // You have to specify the actual Injectable Component. Explicit.
+  inject: Inject  // The inject function or a React Element.
 })(ProductsPage);
 ```
  
@@ -176,16 +185,12 @@ Here are a few basic properties you should be aware of:
    * You can have multiple instances of an Injectable rendered in your app.  They will all recieve the same injected content from their respective Injectors. 
 
    * You can create multiple Injectors components targetting the same Injectable component. The rendered Injectors shall have their injected elements collected and passed through to the target Injectable. For example, you may want to pass in action buttons from different components into an InjectableActions component. 
-
-   * Multiple renders of the same Injector instance will not result in duplicate content being rendered within the Injectable target.  Only unique instances are passed through to the Injectable target.
    
-   * If an Injector is removed from the tree then it's injected elements will automatically be removed from the Injectable target.  
+   * If an Injector is removed from the tree then it's injected elements will automatically be removed from the Injectable target. 
    
    * Any new Injectors that are rendered into the tree will automatically have their injected content rendered within any rendered Injectable target. 
    
-   * Injectors are allowed to be rendered before any Injectables.  Once a related Injectable instance is rendered then any content from existing Injectors will automatically be rendered by the newly rendered Injectable.
-   
-   * You should create a new Injectable/Injector HOC pair (via the prepInjection function) for every Injectable target you would like.
+   * Injectors are allowed to be rendered before any Injectables.  Once their target Injectable Component is rendered then any content from existing the Injectors will automatically be rendered within the newly rendered Injectable.
 
 ## Examples
 

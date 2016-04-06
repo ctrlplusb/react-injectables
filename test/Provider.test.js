@@ -12,6 +12,8 @@ describe(`Given the Injectables Provider`, () => {
   let producer1;
   let producer2;
   let producer3;
+  let inject1;
+  let inject2;
 
   before(() => {
     const Provider = require(`../src/Provider`).default;
@@ -22,9 +24,10 @@ describe(`Given the Injectables Provider`, () => {
     consumed2 = [];
     consumer1 = { consume: (elements) => { consumed1 = elements; } };
     consumer2 = { consume: (elements) => { consumed2 = elements; } };
-    producer1 = { getInjectElement: () => element1 };
-    producer2 = { getInjectElement: () => element1 };
-    producer3 = { getInjectElement: () => element2 };
+    producer1 = {};
+    producer2 = {};
+    inject1 = () => element1;
+    inject2 = () => element2;
   });
 
   it(`Then a newly added consumer should initially receive now elements`, () => {
@@ -42,7 +45,8 @@ describe(`Given the Injectables Provider`, () => {
     instance.registerInjector({
       injectionId: `foo`,
       injectorId: `injector1`,
-      injector: producer1
+      injector: producer1,
+      inject: inject1
     });
 
     const expected = [element1];
@@ -69,7 +73,8 @@ describe(`Given the Injectables Provider`, () => {
     instance.registerInjector({
       injectionId: `foo`,
       injectorId: `injector1`,
-      injector: producer1
+      injector: producer1,
+      inject: inject1
     });
 
     const expected = [];
@@ -99,7 +104,8 @@ describe(`Given the Injectables Provider`, () => {
     instance.registerInjector({
       injectionId: `foo`,
       injectorId: `injector1`,
-      injector: producer1
+      injector: producer1,
+      inject: inject1
     });
 
     const expected = [element1];
@@ -113,8 +119,9 @@ describe(`Given the Injectables Provider`, () => {
   it(`Then a duplicate producer registration should result in no consumption change`, () => {
     instance.registerInjector({
       injectionId: `foo`,
-      injectorId: `injector2`,
-      injector: producer1
+      injectorId: `injector1`,
+      injector: producer1,
+      inject: inject1
     });
 
     const expected = [element1];
@@ -128,8 +135,9 @@ describe(`Given the Injectables Provider`, () => {
   it(`Then a new producer with an new element should result in 2 element consumption`, () => {
     instance.registerInjector({
       injectionId: `foo`,
-      injectorId: `injector3`,
-      injector: producer3
+      injectorId: `injector2`,
+      injector: producer2,
+      inject: inject2
     });
 
     const expected = [element1, element2];
@@ -140,13 +148,13 @@ describe(`Given the Injectables Provider`, () => {
     expect(actual2).to.eql(expected);
   });
 
-  it(`Then removing producer 2 should result in no consumption changes`, () => {
+  it(`Then removing producer 2 should result in a consumption change`, () => {
     instance.removeInjector({
       injectionId: `foo`,
       injector: producer2
     });
 
-    const expected = [element1, element2];
+    const expected = [element1];
     const actual = consumed1;
     expect(actual).to.eql(expected);
 
@@ -158,10 +166,6 @@ describe(`Given the Injectables Provider`, () => {
     instance.removeInjector({
       injectionId: `foo`,
       injector: producer1
-    });
-    instance.removeInjector({
-      injectionId: `foo`,
-      injector: producer3
     });
 
     const expected = [];

@@ -5,6 +5,7 @@ class InjectablesProvider extends Component {
   static childContextTypes = {
     registerInjector: PropTypes.func.isRequired,
     removeInjector: PropTypes.func.isRequired,
+    updateInjector: PropTypes.func.isRequired,
     registerInjectable: PropTypes.func.isRequired,
     removeInjectable: PropTypes.func.isRequired,
   };
@@ -23,6 +24,8 @@ class InjectablesProvider extends Component {
       registerInjector: (args) => this.registerInjector(args),
 
       removeInjector: (args) => this.removeInjector(args),
+
+      updateInjector: (args) => this.updateInjector(args),
 
       registerInjectable: (args) => this.registerInjectable(args),
 
@@ -56,7 +59,7 @@ class InjectablesProvider extends Component {
 
     const elements = compose(
       filter(x => x !== null && x !== undefined),
-      map(x => x.injector.getInjectElement()),
+      map(x => x.inject()),
       uniqBy(`injectorId`)
     )(injections);
 
@@ -97,8 +100,9 @@ class InjectablesProvider extends Component {
     return find(x => Object.is(x.injector, injector))(registration.injections);
   }
 
-  registerInjector(args: { injectionId: string, injectorId: string, injector: Object }) {
-    const { injectionId, injectorId, injector } = args;
+  registerInjector(args
+    : { injectionId: string, injectorId: string, injector: Object, inject: Function }) {
+    const { injectionId, injectorId, injector, inject } = args;
     const registration = this.getRegistration({ injectionId });
     const existingInjection = this.findInjection({ registration, injector });
 
@@ -106,11 +110,26 @@ class InjectablesProvider extends Component {
       return;
     }
 
-    const newInjection = { injector, injectorId };
+    const newInjection = { injectorId, injector, inject };
     registration.injections = [
       ...registration.injections,
       newInjection
     ];
+
+    this.runInjections({ registration });
+  }
+
+  updateInjector(args
+    : { injectionId: string, injector: Object, inject: Function }) {
+    const { injectionId, injector, inject } = args;
+    const registration = this.getRegistration({ injectionId });
+    const existingInjection = this.findInjection({ registration, injector });
+
+    if (!existingInjection) {
+      throw new Error(`Trying to update an Injector that is not registered`);
+    }
+
+    existingInjection.inject = inject;
 
     this.runInjections({ registration });
   }

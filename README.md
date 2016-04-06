@@ -48,7 +48,7 @@ class ProductsPage extends Component {
 
 export default Injector({
   to: Sidebar,
-  elements: [ <MyBasketSummary />]
+  inject: function () { return (<MyBasketSummary />); }
 })(ProductsPage);
 ```
 
@@ -69,7 +69,7 @@ To get going there are only 3 steps:
 
   1. Wrap your application with our `Provider`.
   3. Wrap the component you would like to be recieve content with our `Injectable`. e.g. `Injectable(Sidebar)`
-  4. Wrap a component you would like to produce content with our `Injector`. e.g.: `Injector({ to: InjectableSidebar, elements: [<MyBasketsView>])(ProductPage)` 
+  4. Wrap a component you would like to produce content with our `Injector`. e.g.: `Injector({ to: InjectableSidebar, inject: () => <MyBasketsView>)(ProductPage)` 
     
 ### Full Tutorial 
 
@@ -134,6 +134,7 @@ You need to make use of our `Injector`, wrapping your component, whilst also pro
 import React from 'react';
 import { Injector } from 'react-injectables';
 import InjectableSidebar from './InjectableSidebar';
+import BasketViewPage from './BasketViewPage';
 
 class ProductsPage extends Component {
    ....
@@ -141,9 +142,21 @@ class ProductsPage extends Component {
     
 export default Injector({
   to: InjectableSidebar,
-  elements: [<div>Injection from Products Page</div>]
+  inject: function (props) { return (<BasketViewPage focusOnProductId={props.productId} />); }
 })(ProductsPage);
 ```
+ 
+The `inject` property argument for the `Injector` accepts either of two things:
+
+  * A function with a `props` argument that when executed will return a React Element. i.e. a stateless functional component.  It will recieve the same props that will be passed into the component being wrapped by the `Injector`.  If you wrap your component with multiple higher order functions/components then please make sure that `Injector` is the first of the functions used to wrap your component. For e.g. 
+  ```javascript
+  export default compose( // executes last to first.
+    Connect(stateM, propsM), 
+    Injector(args)
+  )(ProductsPage);
+  ```
+
+  * A React element. This works, however the element is created up front before it is even needed.  Also you lose the capability to interogate any props that may have been passed into your component.
  
  ---
  
@@ -175,13 +188,8 @@ Here are a few basic properties you should be aware of:
 
 ## Examples
 
-At the moment there is only one example, using react-router.  Pull the source onto your machine then execute the following commands:
+At the moment there is only one example, using react-router.  Check out the examples folder.  I wouldn't recommend running it yet as I have yet to add any style to it, but it will execute if you try. :)
 
-    cd examples/react-router
-    npm install
-    npm run watch
-    
-Browse to localhost:3000 to see it in action.
 
 ## Some other considerations.
 

@@ -1,12 +1,13 @@
 <p align='center'>
   <img src='https://raw.githubusercontent.com/ctrlplusb/react-injectables/master/assets/logo.png' width='350'/>
-  <p align='center'>Explicitly inject Elements into any part of your React render tree</p>
+  <p align='center'>Explicitly inject Elements to any part of your React render tree</p>
 </p>
 
-[![Travis](https://img.shields.io/travis/ctrlplusb/react-injectables.svg?style=flat-square)](https://travis-ci.org/ctrlplusb/react-injectables)
+[![Travis](https://img.shields.io/travis/ctrlplusb/react-injectables.svg?style=flat-square)](https://travis-ci.org/ctrlplusb/react-injectables) 
 [![npm](https://img.shields.io/npm/v/react-injectables.svg?style=flat-square)](http://npm.im/react-injectables)
 [![MIT License](https://img.shields.io/npm/l/react-injectables.svg?style=flat-square)](http://opensource.org/licenses/MIT)
 [![Codecov](https://img.shields.io/codecov/c/github/ctrlplusb/react-injectables.svg?style=flat-square)](https://codecov.io/github/ctrlplusb/react-injectables)
+[![Maintenance](https://img.shields.io/maintenance/yes/2016.svg?style=flat-square)]()
 
 Tiny, and the only dependency is a peer dependency of React.
 

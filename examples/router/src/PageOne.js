@@ -9,5 +9,5 @@ const PageOne = () => (
 );
 export default Injector({
   to: InjectableHeader,
-  elements: [<div>Injection from Page One</div>]
+  inject: () => <div>Injection from Page One</div>
 })(PageOne);

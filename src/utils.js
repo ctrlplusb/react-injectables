@@ -14,6 +14,7 @@ import React, { Children } from 'react';
  */
 export function compose(...funcs) {
   return (...args) => {
+    /* istanbul ignore next */
     if (funcs.length === 0) {
       return args[0];
     }
@@ -47,8 +48,21 @@ export const withoutAll = (toRemove) => (point) =>
       (x) => all(y => !Object.is(x, y))(toRemove)
     )(point);
 
-// :: [a] -> [a]
-export const uniq = y => Array.from(new Set(y));
+// :: a -> [b]
+export const uniqBy = x => y => {
+  const checked = new Set();
+  const result = [];
+
+  y.forEach(a => {
+    const prop = a[x];
+    if (!checked.has(prop)) {
+      checked.add(prop);
+      result.push(a);
+    }
+  });
+
+  return result;
+};
 
 /**
  * :: [a] -> [a] -> boolean

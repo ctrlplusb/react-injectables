@@ -8,7 +8,15 @@ const PageTwo = () => (
   </div>
 );
 
+const Inject = (props) => (
+  <div>
+    Injection from Page Two.<br />
+    I also recieved these props:<br />
+  {Object.keys(props).join(`, `)}
+  </div>
+);
+
 export default Injector({
   to: InjectableHeader,
-  elements: [<div>Injection from Page Two</div>]
+  inject: Inject
 })(PageTwo);

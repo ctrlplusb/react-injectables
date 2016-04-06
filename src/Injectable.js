@@ -1,18 +1,18 @@
 import React, { PropTypes, Component } from 'react';
 import { containsUniq, keyedElements } from './utils';
 
-let injectionIndex = 0;
+let injectionIdIndex = 0;
 
 const Injectable = (WrappedComponent) => {
-  injectionIndex++;
-  const injectionId = `injection_${injectionIndex}`;
+  injectionIdIndex++;
+  const injectionId = `injectionId_${injectionIdIndex}`;
 
   class InjectableComponent extends Component {
     static injectionId = injectionId;
 
     static contextTypes = {
-      consumeElements: PropTypes.func.isRequired,
-      stopConsumingElements: PropTypes.func.isRequired
+      registerInjectable: PropTypes.func.isRequired,
+      removeInjectable: PropTypes.func.isRequired
     };
 
     state = {
@@ -20,14 +20,17 @@ const Injectable = (WrappedComponent) => {
     }
 
     componentWillMount() {
-      this.context.consumeElements({
-        injectionId: InjectableComponent.injectionId,
+      this.context.registerInjectable({
+        injectionId,
         injectable: this
       });
     }
 
     componentWillUnmount() {
-      this.context.stopConsumingElements({ listener: this });
+      this.context.removeInjectable({
+        injectionId,
+        injectable: this
+      });
     }
 
     consume = (elements) => {

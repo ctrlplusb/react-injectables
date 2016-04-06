@@ -22,13 +22,13 @@ describe(`Given the Injectables Provider`, () => {
     consumed2 = [];
     consumer1 = { consume: (elements) => { consumed1 = elements; } };
     consumer2 = { consume: (elements) => { consumed2 = elements; } };
-    producer1 = {};
-    producer2 = {};
-    producer3 = {};
+    producer1 = { getInjectElement: () => element1 };
+    producer2 = { getInjectElement: () => element1 };
+    producer3 = { getInjectElement: () => element2 };
   });
 
   it(`Then a newly added consumer should initially receive now elements`, () => {
-    instance.consumeElements({
+    instance.registerInjectable({
       injectionId: `foo`,
       injectable: consumer1
     });
@@ -39,10 +39,10 @@ describe(`Given the Injectables Provider`, () => {
   });
 
   it(`Then a produced element should be consumed`, () => {
-    instance.produceElements({
+    instance.registerInjector({
       injectionId: `foo`,
-      injector: producer1,
-      elements: [element1]
+      injectorId: `injector1`,
+      injector: producer1
     });
 
     const expected = [element1];
@@ -51,7 +51,7 @@ describe(`Given the Injectables Provider`, () => {
   });
 
   it(`Then a removed producer should update the consumer`, () => {
-    instance.removeProducer({
+    instance.removeInjector({
       injectionId: `foo`,
       injector: producer1
     });
@@ -62,14 +62,14 @@ describe(`Given the Injectables Provider`, () => {
   });
 
   it(`Then a removed consumer should not recieve any more produced elements`, () => {
-    instance.stopConsumingElements({
+    instance.removeInjectable({
       injectionId: `foo`,
       injectable: consumer1
     });
-    instance.produceElements({
+    instance.registerInjector({
       injectionId: `foo`,
-      injector: producer1,
-      elements: [element1]
+      injectorId: `injector1`,
+      injector: producer1
     });
 
     const expected = [];
@@ -78,11 +78,11 @@ describe(`Given the Injectables Provider`, () => {
   });
 
   it(`Then new consumers should both recieve elements that were already produced`, () => {
-    instance.consumeElements({
+    instance.registerInjectable({
       injectionId: `foo`,
       injectable: consumer1
     });
-    instance.consumeElements({
+    instance.registerInjectable({
       injectionId: `foo`,
       injectable: consumer2
     });
@@ -96,10 +96,10 @@ describe(`Given the Injectables Provider`, () => {
   });
 
   it(`Then a duplicate producer should result in no change to element consumption`, () => {
-    instance.produceElements({
+    instance.registerInjector({
       injectionId: `foo`,
-      injector: producer1,
-      elements: [element2]
+      injectorId: `injector1`,
+      injector: producer1
     });
 
     const expected = [element1];
@@ -110,11 +110,11 @@ describe(`Given the Injectables Provider`, () => {
     expect(actual2).to.eql(expected);
   });
 
-  it(`Then a new producer with an existing element should result in no consumption change`, () => {
-    instance.produceElements({
+  it(`Then a duplicate producer registration should result in no consumption change`, () => {
+    instance.registerInjector({
       injectionId: `foo`,
-      injector: producer2,
-      elements: [element1]
+      injectorId: `injector2`,
+      injector: producer1
     });
 
     const expected = [element1];
@@ -126,10 +126,10 @@ describe(`Given the Injectables Provider`, () => {
   });
 
   it(`Then a new producer with an new element should result in 2 element consumption`, () => {
-    instance.produceElements({
+    instance.registerInjector({
       injectionId: `foo`,
-      injector: producer3,
-      elements: [element2]
+      injectorId: `injector3`,
+      injector: producer3
     });
 
     const expected = [element1, element2];
@@ -141,7 +141,7 @@ describe(`Given the Injectables Provider`, () => {
   });
 
   it(`Then removing producer 2 should result in no consumption changes`, () => {
-    instance.removeProducer({
+    instance.removeInjector({
       injectionId: `foo`,
       injector: producer2
     });
@@ -155,11 +155,11 @@ describe(`Given the Injectables Provider`, () => {
   });
 
   it(`Then removing the all producers should result in all consumptions being zeroed`, () => {
-    instance.removeProducer({
+    instance.removeInjector({
       injectionId: `foo`,
       injector: producer1
     });
-    instance.removeProducer({
+    instance.removeInjector({
       injectionId: `foo`,
       injector: producer3
     });

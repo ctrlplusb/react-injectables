@@ -1,27 +1,42 @@
 import React, { PropTypes, Component } from 'react';
 
-const Injector = (args: { to: Object, elements : Array<Object> }) => {
-  const { to, elements } = args;
+type Inject = Object | (props: Object) => Object;
+
+let injectorIndex = 0;
+
+const Injector = (args: { to: Object, inject: Inject }) => {
+  const { to, inject } = args;
+
+  injectorIndex++;
+  const injectorId = `injector_${injectorIndex}`;
 
   return function WrapComponent(WrappedComponent) {
     class InjectorComponent extends Component {
       static contextTypes = {
-        produceElements: PropTypes.func.isRequired,
-        removeProducer: PropTypes.func.isRequired
+        registerInjector: PropTypes.func.isRequired,
+        removeInjector: PropTypes.func.isRequired
       };
 
       componentWillMount() {
-        this.context.produceElements({
+        this.context.registerInjector({
           injectionId: to.injectionId,
-          injector: this,
-          elements
+          injectorId,
+          injector: this
         });
       }
 
       componentWillUnmount() {
-        this.context.removeProducer({
-          injectionId: to.injectionId, injector: this
+        this.context.removeInjector({
+          injectionId: to.injectionId,
+          injector: this
         });
+      }
+
+      getInjectElement = () => {
+        if (typeof inject === `function`) {
+          return inject(this.props);
+        }
+        return inject;
       }
 
       render() {

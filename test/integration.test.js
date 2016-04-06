@@ -43,15 +43,24 @@ describeWithDOM(`Given an Injectables configuration`, () => {
       children: PropTypes.any
     };
 
+    const sectionOnePropTypes = {
+      message: PropTypes.string
+    };
+
     const SectionOne = () => (
       <div>
         <h1>Section One</h1>
       </div>
     );
+    SectionOne.propTypes = sectionOnePropTypes;
+
+    const SectionOneHeaderInjection = props =>
+      <div id="Injection">Section One, {props.message}.</div>;
+    SectionOneHeaderInjection.propTypes = sectionOnePropTypes;
 
     HeaderInjectingSectionOne = Injector({
       to: InjectableHeader,
-      elements: [<div id="Injection">Section One Header Injection.</div>]
+      inject: SectionOneHeaderInjection
     })(SectionOne);
 
     const SectionTwo = () => (
@@ -62,7 +71,7 @@ describeWithDOM(`Given an Injectables configuration`, () => {
 
     HeaderInjectingSectionTwo = Injector({
       to: InjectableHeader,
-      elements: [<div id="Injection">Section Two Header Injection.</div>]
+      inject: <div id="Injection">Section Two Header Injection.</div>
     })(SectionTwo);
   });
 

@@ -16,7 +16,7 @@ ReactDOM.render((
       <Route path="/" component={App}>
         <IndexRoute component={Home} />
         <Route path="pageOne" component={PageOne} />
-        <Route path="pageTwo" component={PageTwo} />
+        <Route path="pageTwo" component={() => <PageTwo foo bar baz />} />
       </Route>
     </Router>
   </InjectablesProvider>

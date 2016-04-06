@@ -1,12 +1,12 @@
 import { Children, Component, PropTypes } from 'react';
-import { compose, concatAll, find, map, uniq, without, withoutAll } from './utils';
+import { compose, find, map, uniqBy, without, withoutAll } from './utils';
 
 class InjectablesProvider extends Component {
   static childContextTypes = {
-    produceElements: PropTypes.func.isRequired,
-    removeProducer: PropTypes.func.isRequired,
-    consumeElements: PropTypes.func.isRequired,
-    stopConsumingElements: PropTypes.func.isRequired,
+    registerInjector: PropTypes.func.isRequired,
+    removeInjector: PropTypes.func.isRequired,
+    registerInjectable: PropTypes.func.isRequired,
+    removeInjectable: PropTypes.func.isRequired,
   };
 
   static propTypes = {
@@ -20,13 +20,13 @@ class InjectablesProvider extends Component {
 
   getChildContext() {
     return {
-      produceElements: (args) => this.produceElements(args),
+      registerInjector: (args) => this.registerInjector(args),
 
-      removeProducer: (args) => this.removeProducer(args),
+      removeInjector: (args) => this.removeInjector(args),
 
-      consumeElements: (args) => this.consumeElements(args),
+      registerInjectable: (args) => this.registerInjectable(args),
 
-      stopConsumingElements: (args) => this.stopConsumingElements(args)
+      removeInjectable: (args) => this.removeInjectable(args)
     };
   }
 
@@ -38,11 +38,10 @@ class InjectablesProvider extends Component {
       )(this.registrations);
 
     if (!registration) {
-      // Need to create the registration.
       registration = {
         injectionId,
         injectables: [],
-        injectors: []
+        injections: []
       };
 
       this.registrations.push(registration);
@@ -51,15 +50,14 @@ class InjectablesProvider extends Component {
     return registration;
   }
 
-  notifyConsumers(args: { registration: Object }) {
+  runInjections(args: { registration: Object }) {
     const { registration } = args;
-    const { injectables, injectors } = registration;
+    const { injectables, injections } = registration;
 
     const elements = compose(
-      uniq,
-      concatAll,
-      map(x => x.elements)
-    )(injectors);
+      map(x => x.injector.getInjectElement()),
+      uniqBy(`injectorId`)
+    )(injections);
 
     injectables.forEach(injectable => {
       injectable.consume(elements);
@@ -71,56 +69,66 @@ class InjectablesProvider extends Component {
     this.registrations = without(registration)(this.registrations);
   }
 
-  consumeElements(args: { injectionId: string, injectable: Object}) {
+  registerInjectable(args: { injectionId: string, injectable: Object}) {
     const { injectionId, injectable } = args;
     const registration = this.getRegistration({ injectionId });
 
     if (withoutAll(registration.injectables)([injectable]).length > 0) {
       registration.injectables = [...registration.injectables, injectable];
-      this.notifyConsumers({ registration });  // First time consumption.
+      this.runInjections({ registration });  // First time consumption.
     }
   }
 
-  stopConsumingElements(args: { injectionId: string, injectable: Object }) {
+  removeInjectable(args: { injectionId: string, injectable: Object }) {
     const { injectionId, injectable } = args;
     const registration = this.getRegistration({ injectionId });
 
     const injectables = without(injectable)(registration.injectables);
 
-    if (injectables.length === 0 && registration.injectors.length === 0) {
+    if (injectables.length === 0 && registration.injections.length === 0) {
       this.removeRegistration({ registration });
     } else {
       registration.injectables = injectables;
     }
   }
 
-  findProducer({ registration, injector }) {
-    return find(x => Object.is(x.injector, injector))(registration.injectors);
+  findInjection({ registration, injector }) {
+    return find(x => Object.is(x.injector, injector))(registration.injections);
   }
 
-  produceElements(args: { injectionId: string, injector: Object, elements: Array<Object> }) {
-    const { injectionId, injector, elements } = args;
+  registerInjector(args: { injectionId: string, injectorId: string, injector: Object }) {
+    const { injectionId, injectorId, injector } = args;
     const registration = this.getRegistration({ injectionId });
-    const existingProducer = this.findProducer({ registration, injector });
+    const existingInjection = this.findInjection({ registration, injector });
 
-    if (existingProducer) {
+    if (existingInjection) {
       return;
     }
 
-    const newInjector = { injector, elements };
-    registration.injectors = [
-      ...registration.injectors,
-      newInjector
+    const newInjection = { injector, injectorId };
+    registration.injections = [
+      ...registration.injections,
+      newInjection
     ];
-    this.notifyConsumers({ registration });
+
+    this.runInjections({ registration });
   }
 
-  removeProducer(args: { injectionId: string, injector: Object }) {
+  removeInjector(args: { injectionId: string, injector: Object }) {
     const { injectionId, injector } = args;
     const registration = this.getRegistration({ injectionId });
-    const existingInjector = this.findProducer({ registration, injector });
-    registration.injectors = without(existingInjector)(registration.injectors);
-    this.notifyConsumers({ registration });
+    const injection = this.findInjection({ registration, injector });
+
+    if (injection) {
+      registration.injections = without(injection)(registration.injections);
+      this.runInjections({ registration });
+    } else {
+      /* istanbul ignore next */
+      if (process.env.NODE_ENV === `development`) {
+        throw new Error(
+          `Trying to remove an injector which has not been registered`);
+      }
+    }
   }
 
   render() {

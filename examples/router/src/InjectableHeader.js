@@ -7,7 +7,6 @@ const Header = ({ injected }) => (
   <div style={{ backgroundColor: `red`, color: `white` }}>
     <h1>INJECTABLE HEADER</h1>
     <div>
-      <strong>INJECTED ITEMS:</strong>
       {injected.length > 0 ? injected : <div>Nothing has been injected</div>}
     </div>
   </div>

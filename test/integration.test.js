@@ -4,18 +4,20 @@ import { expect } from 'chai';
 import $ from 'teaspoon';
 
 describeWithDOM(`Given an Injectables configuration`, () => {
-  let Provider;
-  let prepInjection;
   let InjectableHeader;
   let Layout;
   let HeaderInjectingSectionOne;
   let HeaderInjectingSectionTwo;
+  let render;
 
   before(() => {
-    Provider = require(`../src/Provider`).default;
-    prepInjection = require(`../src/prepInjection`).default;
+    const { Provider, Injectable, Injector } = require(`../src/index.js`);
 
-    const { Injectable, Injector } = prepInjection();
+    render = elements => $(
+      <Provider>
+        {elements}
+      </Provider>
+    ).render();
 
     const Header = ({ injected }) => (
       <div id="Header">
@@ -47,9 +49,10 @@ describeWithDOM(`Given an Injectables configuration`, () => {
       </div>
     );
 
-    HeaderInjectingSectionOne = Injector([
-      <div id="Injection">Section One Header Injection.</div>
-    ])(SectionOne);
+    HeaderInjectingSectionOne = Injector({
+      to: InjectableHeader,
+      elements: [<div id="Injection">Section One Header Injection.</div>]
+    })(SectionOne);
 
     const SectionTwo = () => (
       <div>
@@ -57,22 +60,21 @@ describeWithDOM(`Given an Injectables configuration`, () => {
       </div>
     );
 
-    HeaderInjectingSectionTwo = Injector([
-      <div id="Injection">Section Two Header Injection.</div>
-    ])(SectionTwo);
+    HeaderInjectingSectionTwo = Injector({
+      to: InjectableHeader,
+      elements: [<div id="Injection">Section Two Header Injection.</div>]
+    })(SectionTwo);
   });
 
   describe(`When the injector is rendered as a child of the injectable`, () => {
     let rendered;
 
     before(() => {
-      rendered = $(
-        <Provider>
-          <Layout>
-            <HeaderInjectingSectionOne />
-          </Layout>
-        </Provider>
-      ).render();
+      rendered = render(
+        <Layout>
+          <HeaderInjectingSectionOne />
+        </Layout>
+      );
     });
 
     it(`Then the injected content should have been rendered in the header`, () => {
@@ -90,14 +92,12 @@ describeWithDOM(`Given an Injectables configuration`, () => {
     let rendered;
 
     before(() => {
-      rendered = $(
-        <Provider>
-          <div>
-            <HeaderInjectingSectionOne />
-            <Layout />
-          </div>
-        </Provider>
-      ).render();
+      rendered = render(
+        <div>
+          <HeaderInjectingSectionOne />
+          <Layout />
+        </div>
+      );
     });
 
     it(`Then the injected content should have been rendered in the header`, () => {
@@ -115,16 +115,14 @@ describeWithDOM(`Given an Injectables configuration`, () => {
     let rendered;
 
     before(() => {
-      rendered = $(
-        <Provider>
-          <div>
+      rendered = render(
+        <div>
+          <HeaderInjectingSectionOne />
+          <Layout>
             <HeaderInjectingSectionOne />
-            <Layout>
-              <HeaderInjectingSectionOne />
-            </Layout>
-          </div>
-        </Provider>
-      ).render();
+          </Layout>
+        </div>
+      );
     });
 
     it(`Then the injected content should have been rendered in the header`, () => {
@@ -142,18 +140,16 @@ describeWithDOM(`Given an Injectables configuration`, () => {
     let rendered;
 
     before(() => {
-      rendered = $(
-        <Provider>
-          <div>
-            <HeaderInjectingSectionTwo />
-            <Layout>
-              <HeaderInjectingSectionOne />
-              <HeaderInjectingSectionTwo />
-            </Layout>
+      rendered = render(
+        <div>
+          <HeaderInjectingSectionTwo />
+          <Layout>
             <HeaderInjectingSectionOne />
-          </div>
-        </Provider>
-      ).render();
+            <HeaderInjectingSectionTwo />
+          </Layout>
+          <HeaderInjectingSectionOne />
+        </div>
+      );
     });
 
     it(`Then the injected content should have been rendered in the header`, () => {

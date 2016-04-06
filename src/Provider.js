@@ -1,8 +1,18 @@
-// Libraries and Utils.
 import { Children, Component, PropTypes } from 'react';
 import { compose, concatAll, find, map, uniq, without, withoutAll } from './utils';
 
 class InjectablesProvider extends Component {
+  static childContextTypes = {
+    produceElements: PropTypes.func.isRequired,
+    removeProducer: PropTypes.func.isRequired,
+    consumeElements: PropTypes.func.isRequired,
+    stopConsumingElements: PropTypes.func.isRequired,
+  };
+
+  static propTypes = {
+    children: PropTypes.element
+  };
+
   constructor(props, context) {
     super(props, context);
     this.registrations = [];
@@ -20,17 +30,19 @@ class InjectablesProvider extends Component {
     };
   }
 
-  getRegistration(args: { namespace: string }) {
-    const { namespace } = args;
+  getRegistration(args: { injectionId: string }) {
+    const { injectionId } = args;
 
-    let registration = find(x => x.namespace === namespace)(this.registrations);
+    let registration = find(
+        x => x.injectionId === injectionId
+      )(this.registrations);
 
     if (!registration) {
       // Need to create the registration.
       registration = {
-        namespace,
-        consumers: [],
-        producers: []
+        injectionId,
+        injectables: [],
+        injectors: []
       };
 
       this.registrations.push(registration);
@@ -41,16 +53,16 @@ class InjectablesProvider extends Component {
 
   notifyConsumers(args: { registration: Object }) {
     const { registration } = args;
-    const { consumers, producers } = registration;
+    const { injectables, injectors } = registration;
 
     const elements = compose(
       uniq,
       concatAll,
       map(x => x.elements)
-    )(producers);
+    )(injectors);
 
-    consumers.forEach(consumer => {
-      consumer(elements);
+    injectables.forEach(injectable => {
+      injectable.consume(elements);
     });
   }
 
@@ -59,55 +71,55 @@ class InjectablesProvider extends Component {
     this.registrations = without(registration)(this.registrations);
   }
 
-  consumeElements(args: { namespace: string, consumer: Function}) {
-    const { namespace, consumer } = args;
-    const registration = this.getRegistration({ namespace });
+  consumeElements(args: { injectionId: string, injectable: Object}) {
+    const { injectionId, injectable } = args;
+    const registration = this.getRegistration({ injectionId });
 
-    if (withoutAll(registration.consumers)([consumer]).length > 0) {
-      registration.consumers = [...registration.consumers, consumer];
+    if (withoutAll(registration.injectables)([injectable]).length > 0) {
+      registration.injectables = [...registration.injectables, injectable];
       this.notifyConsumers({ registration });  // First time consumption.
     }
   }
 
-  stopConsumingElements(args: { namespace: string, consumer: Function }) {
-    const { consumer, namespace } = args;
-    const registration = this.getRegistration({ namespace });
+  stopConsumingElements(args: { injectionId: string, injectable: Object }) {
+    const { injectionId, injectable } = args;
+    const registration = this.getRegistration({ injectionId });
 
-    const consumers = without(consumer)(registration.consumers);
+    const injectables = without(injectable)(registration.injectables);
 
-    if (consumers.length === 0 && registration.producers.length === 0) {
+    if (injectables.length === 0 && registration.injectors.length === 0) {
       this.removeRegistration({ registration });
     } else {
-      registration.consumers = consumers;
+      registration.injectables = injectables;
     }
   }
 
-  findProducer({ registration, producer }) {
-    return find(x => Object.is(x.producer, producer))(registration.producers);
+  findProducer({ registration, injector }) {
+    return find(x => Object.is(x.injector, injector))(registration.injectors);
   }
 
-  produceElements(args: { namespace: string, producer: Object, elements: Array<Object> }) {
-    const { namespace, producer, elements } = args;
-    const registration = this.getRegistration({ namespace });
-    const existingProducer = this.findProducer({ registration, producer });
+  produceElements(args: { injectionId: string, injector: Object, elements: Array<Object> }) {
+    const { injectionId, injector, elements } = args;
+    const registration = this.getRegistration({ injectionId });
+    const existingProducer = this.findProducer({ registration, injector });
 
     if (existingProducer) {
       return;
     }
 
-    const newProducer = { producer, elements };
-    registration.producers = [
-      ...registration.producers,
-      newProducer
+    const newInjector = { injector, elements };
+    registration.injectors = [
+      ...registration.injectors,
+      newInjector
     ];
     this.notifyConsumers({ registration });
   }
 
-  removeProducer(args: { namespace: string, producer: Object }) {
-    const { namespace, producer } = args;
-    const registration = this.getRegistration({ namespace });
-    const existingProducer = this.findProducer({ registration, producer });
-    registration.producers = without(existingProducer)(registration.producers);
+  removeProducer(args: { injectionId: string, injector: Object }) {
+    const { injectionId, injector } = args;
+    const registration = this.getRegistration({ injectionId });
+    const existingInjector = this.findProducer({ registration, injector });
+    registration.injectors = without(existingInjector)(registration.injectors);
     this.notifyConsumers({ registration });
   }
 
@@ -117,16 +129,5 @@ class InjectablesProvider extends Component {
     );
   }
 }
-
-InjectablesProvider.childContextTypes = {
-  produceElements: PropTypes.func.isRequired,
-  removeProducer: PropTypes.func.isRequired,
-  consumeElements: PropTypes.func.isRequired,
-  stopConsumingElements: PropTypes.func.isRequired,
-};
-
-InjectablesProvider.propTypes = {
-  children: PropTypes.element
-};
 
 export default InjectablesProvider;

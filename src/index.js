@@ -1,2 +1,3 @@
 export Provider from './Provider';
-export prepInjection from './prepInjection';
+export Injectable from './Injectable';
+export Injector from './Injector';

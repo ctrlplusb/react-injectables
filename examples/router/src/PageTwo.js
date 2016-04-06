@@ -1,11 +1,14 @@
 import React from 'react';
-import { HeaderInjector } from './InjectableHeader';
+import { Injector } from '../../../src/index.js';
+import InjectableHeader from './InjectableHeader';
 
 const PageTwo = () => (
   <div>
     I am page two.
   </div>
 );
-export default HeaderInjector([
-  <div>Injection from Page Two</div>
-])(PageTwo);
+
+export default Injector({
+  to: InjectableHeader,
+  elements: [<div>Injection from Page Two</div>]
+})(PageTwo);

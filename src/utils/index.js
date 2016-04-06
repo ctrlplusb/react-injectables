@@ -1,3 +1,5 @@
+import React, { Children } from 'react';
+
 /**
  * Composes single-argument functions from right to left. The rightmost
  * function can take multiple arguments as it provides the signature for
@@ -42,8 +44,8 @@ export const without = (toRemove) => (point) =>
 // :: [a] -> [a] -> [a]
 export const withoutAll = (toRemove) => (point) =>
     filter(
-      (x) => all(y => !Object.is(x, y))(toRemove),
-      point);
+      (x) => all(y => !Object.is(x, y))(toRemove)
+    )(point);
 
 // :: [a] -> [a]
 export const uniq = y => Array.from(new Set(y));
@@ -74,3 +76,28 @@ export const map = f => x => x.map(f);
 
 // :: (a => boolean) => [a] => a|undefined
 export const find = f => x => x.find(f);
+
+function KeyedComponent({ children }) {
+  return Children.only(children);
+}
+
+//
+/**
+ * :: [Element] -> [Element]
+ *
+ * Ensures the given react elements have 'key' properties on them.
+ *
+ * @param  prefix
+ *   The prefix for the keys.
+ * @param  items
+ *   The react elements.
+ *
+ * @return The keyed react elements.
+ */
+export function keyedElements(prefix : string, items : Array<Object>) {
+  let index = 0;
+  return items.map(x => {
+    index++;
+    return <KeyedComponent key={`${prefix}_${index}`}>{x}</KeyedComponent>;
+  });
+}

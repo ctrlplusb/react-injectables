@@ -33,9 +33,26 @@ One option would be to use react-routers native capability to pass down multiple
 
 Enter Injectables.
 
-Injectables aims to provide you with a mechanism to explicity define an Injectable target and Injector source component(s).  
+Injectables aims to provide you with a mechanism to explicity define an Injectable target and Injector source component(s).
 
-Fairy dust is involved, however, we attempt to keep things as un-magical as possible - explictness is the key.
+With Injectables you can easily inject into `Sidebar` from your `ProductPage` doing something similar to the following:
+
+```javascript
+import { Injector } from 'react-injectables';
+
+class ProductsPage extends Component {
+  ...
+}
+
+export default Injector({
+  to: Sidebar,
+  elements: [ <MyBasketSummary />]
+})(ProductsPage);
+```
+
+Now every time `ProductPage` is rendered onto the page the `MyBasketSummary` will be injected into `Sidebar`. Ok, there is a tiny bit of additional setup. But it's quick sticks to get going. 
+
+Fairy dust is involved, but we attempt to keep things as un-magical as possible, keeping things explict, whilst also easy to use.
 
 
 ## Usage
@@ -46,13 +63,11 @@ First install the library.
 
 ### Quick Start
     
-Here is a summary of what you need to do in order to support the injection of content from one Component to another:
-
+To get going there are only 3 steps:
 
   1. Wrap your application with our `Provider`.
-  2. Create a pair of `Injectable` and `Injector` higher order components using our `prepInjection()` function.
-  3. Wrap the component you would like to be recieve content with the `Injectable` higher order component. For example: `const InjectableHeader = Injectable(Header)`
-  4. Wrap a component you would like to produce content with the `Injector` higher order component. This is also the point in which you declare the content to be injected.  For example: `const InjectorProductPage = Injector(<div>I will be injected</div>)(ProductPage)` 
+  3. Wrap the component you would like to be recieve content with our `Injectable`. e.g. `Injectable(Sidebar)`
+  4. Wrap a component you would like to produce content with our `Injector`. e.g.: `Injector({ to: InjectableSidebar, elements: [<MyBasketsView>])(ProductPage)` 
     
 ### Full Tutorial 
 
@@ -79,75 +94,62 @@ ReactDOM.render((
 _Note:_ If you already have another component with the name of `Provider` in your app (think redux), then you can rename the import, like so:
 `import { Provider as InjectablesProvider } from 'react-injectables';`
 
-__Step 2 + 3__
+__Step 2__
 	 
-Now you need to create an Injectable Component.  We have a helper function that will provide you with two higher order component functions to aid you with this.
-
-Let's say that you would like to create a Header component that you could inject in to. You would do the following:
+Now you need to create an Injectable Component.  Let's say that you would like to create a Sidebar component that you could inject in to. You would do the following:
 
 ```javascript
 // ./src/components/InjectableHeader.js
  
 import React, { PropTypes } from 'react';
-import { prepInjection } from 'react-injectables';
-
-// Create a new injectable configuration. Each call to prepInjection
-// creates a unique set of Injectable and Injector higher order
-// components. This allows us to avoid magic strings in your code.
-const { Injectable, Injector } = prepInjection();
+import { Injectable } from 'react-injectables';
 
  // Note the prop named 'injected'.  This will contain any injected elements.
-const Header = ({ injected }) => (
+const Sidebar = ({ injected }) => (
   <div className="header">
    {injected.length > 0 
    	? injected 
    	: <div>Nothing has been injected</div>}
   </div>
 );
-Header.propTypes = {
+Sidebar.propTypes = {
   injected: PropTypes.arrayOf(PropTypes.element)
 };
-
-// We export the Injector higher order component renamed as HeaderInjector to
-// make it explicity what the target is for the injector.
-export const HeaderInjector = Injector;
     
-// We wrap our Header component definition with the Injectable higher order
-// component call. This does all the wiring up for us. Any injections will
-// be passed down to our component via the 'injected' prop.
-export default Injectable(Header);
+// We wrap our Sidebar component with Injectable. This does all the wiring up for us.
+export default Injectable(Sidebar);
 ```
     
-_Note:_ We recommend naming your component files appropriately to indicate that it is indeed an injectable component.  In the above case we named our component file as `InjectableHeader.js`  
+_Note:_ We recommend naming your component files appropriately to indicate that it is indeed an injectable component.  In the above case we named our component file as `InjectableSidebar.js`  
     
-__Step 4__
+__Step 3__
 
-Ok, so you have an `InjectableHeader` now, but you need to declare which components you would like to inject content into the header with.
+Ok, so you have an `InjectableSidebar` now, but you need to declare the components that will inject content in to it.
 
-Within the component you indentify for this purpose pull the `HeaderInjector` higher order component from your newly created `InjectableHeader` component. Then wrap the export of your component with this higher order function, making sure to pass in the content you would like to inject into the Header.
+You need to make use of our `Injector`, wrapping your component, whilst also providing the target injectable component and the elements that you wish to inject.
 
 ```javascript
 import React from 'react';
-import { HeaderInjector } from './InjectableHeader';
+import { Injector } from 'react-injectables';
+import InjectableSidebar from './InjectableSidebar';
 
-const PageOne = () => (
-  <div>
-    I am page one.
-  </div>
-);
+class ProductsPage extends Component {
+   ....
+}
     
-export default HeaderInjector([
-  <div>Injection from Page One</div>
-])(PageOne);
+export default Injector({
+  to: InjectableSidebar,
+  elements: [<div>Injection from Products Page</div>]
+})(ProductsPage);
 ```
  
  ---
  
-And that's it. :)
+And that's it. Any time the `ProductsPage` is rendered it will inject it's content into the `Sidebar`.  When it unmounts, it's injected elements will be removed from the `Sidebar`.
  
 As you can see it's all explicit, so you can follow the import references to find out any relationships.  
 
-You will need to repeat steps 2 - 4 for any set of Injectable targets and Injector sources you would like to create.  Again, this is to keep things as explicit as possible.
+You will need to repeat steps 2 and 3 for any set of Injectable targets and Injector sources you would like to create.  Again, this is to keep things as explicit as possible.
 
 ## Properties of Injectables and Injectors
 
@@ -157,13 +159,13 @@ Here are a few basic properties you should be aware of:
 
    * You can have multiple instances of an Injectable rendered in your app.  They will all recieve the same injected content from their respective Injectors. 
 
-   * You can create multiple Injectors using the Injector higher order function. The rendered Injectors shall have their injected elements collected and passed through to the Injectable target(s).  For example, you may want to pass in action buttons from different components into an InjectableActions component. 
+   * You can create multiple Injectors components targetting the same Injectable component. The rendered Injectors shall have their injected elements collected and passed through to the target Injectable. For example, you may want to pass in action buttons from different components into an InjectableActions component. 
 
-   * Multiple renders of the same Injector instance will not result in duplicate content being rendered within the Injectable target(s).  Only unique instances are passed through to the Injectable target(s).
+   * Multiple renders of the same Injector instance will not result in duplicate content being rendered within the Injectable target.  Only unique instances are passed through to the Injectable target.
    
    * If an Injector is removed from the tree then it's injected elements will automatically be removed from the Injectable target.  
    
-   * Any new Injectors that are rendered into the tree will automatically have their injected content rendered within any rendered Injectable target(s). 
+   * Any new Injectors that are rendered into the tree will automatically have their injected content rendered within any rendered Injectable target. 
    
    * Injectors are allowed to be rendered before any Injectables.  Once a related Injectable instance is rendered then any content from existing Injectors will automatically be rendered by the newly rendered Injectable.
    

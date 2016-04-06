@@ -8,6 +8,8 @@
 [![MIT License](https://img.shields.io/npm/l/react-injectables.svg?style=flat-square)](http://opensource.org/licenses/MIT)
 [![Codecov](https://img.shields.io/codecov/c/github/ctrlplusb/react-injectables.svg?style=flat-square)](https://codecov.io/github/ctrlplusb/react-injectables)
 
+Tiny, and the only dependency is a peer dependency of React.
+
 ## What is this for?
 
 Envision you have the following component tree:

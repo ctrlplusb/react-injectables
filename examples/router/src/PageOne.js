@@ -1,22 +1,19 @@
 import React, { Component, PropTypes } from 'react';
-import { Injector } from '../../../src/index.js';
-import InjectableHeader from './InjectableHeader';
+import { HeaderInjector } from './InjectableHeader';
 
 // Our component that we will inject.
-const Injection = ({ active }) => (
+const InjectMe = ({ active }) => (
   <div>
-    <p>Injection from Page One</p>
+    <p>Injection from Page One.</p>
     <p>The active prop value is: {active ? `active` : `inactive`}</p>
   </div>
 );
-Injection.propTypes = {
+InjectMe.propTypes = {
   active: PropTypes.bool.isRequired
 };
 
-// Our Injector instance configured to inject into the InjectableHeader.
-const HeaderInjection = Injector({
-  into: InjectableHeader
-})(Injection);
+// Use the HeaderInjector helper to create an Injection.
+const HeaderInjection = HeaderInjector(InjectMe);
 
 /**
  * This is the component that when rendered will cause the injection to occur.

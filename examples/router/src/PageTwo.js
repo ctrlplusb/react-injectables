@@ -1,20 +1,19 @@
 import React from 'react';
-import { Injector } from '../../../src/index.js';
-import InjectableHeader from './InjectableHeader';
+import { HeaderInjector } from './InjectableHeader';
 
 // Our component that we will inject.
-const Inject = (props) => (
+const InjectMe = (props) => (
   <div>
-    Injection from Page Two.<br />
-    I also recieved these props:<br />
-  {Object.keys(props).join(`, `)}
+    <p>Injection from Page Two.</p>
+    <p>
+      I also recieved these props:<br />
+      {Object.keys(props).join(`, `)}
+    </p>
   </div>
 );
 
-// Our Injector instance configured to inject into the InjectableHeader.
-const HeaderInjection = Injector({
-  into: InjectableHeader
-})(Inject);
+// Use the HeaderInjector helper to create an Injection.
+const HeaderInjection = HeaderInjector(InjectMe);
 
 /**
  * This is the component that when rendered will cause the injection to occur.
@@ -23,7 +22,7 @@ const PageTwo = () => (
   <div>
     {/* The injection! Nothing actually gets rendered here, it gets sent to
         our target Injectable. */}
-    <HeaderInjection />
+    <HeaderInjection foo="foo" bar="bar" baz="baz" />
 
     I am page two.
   </div>

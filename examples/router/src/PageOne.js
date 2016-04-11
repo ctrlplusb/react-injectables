@@ -2,34 +2,24 @@ import React, { Component, PropTypes } from 'react';
 import { Injector } from '../../../src/index.js';
 import InjectableHeader from './InjectableHeader';
 
-const Content = ({ active }) => (
-  <div>
-    <p>I am page one.</p>
-    <p>My State is {active ? `active` : `inactive`}</p>
-  </div>
-);
-Content.propTypes = {
-  active: PropTypes.bool.isRequired
-};
-
-const Inject = ({ active }) => (
+// Our component that we will inject.
+const Injection = ({ active }) => (
   <div>
     <p>Injection from Page One</p>
     <p>The active prop value is: {active ? `active` : `inactive`}</p>
   </div>
 );
-Inject.propTypes = {
+Injection.propTypes = {
   active: PropTypes.bool.isRequired
 };
 
-const InjectingContent = Injector({
-  to: InjectableHeader,
-  inject: Inject
-})(Content);
+// Our Injector instance configured to inject into the InjectableHeader.
+const HeaderInjection = Injector({
+  into: InjectableHeader
+})(Injection);
 
 /**
- * We wrap our injecting content with a class based component so we can track
- * state and pass down props, thereby adding behaviour.
+ * This is the component that when rendered will cause the injection to occur.
  */
 class PageOne extends Component {
   state = {
@@ -45,7 +35,13 @@ class PageOne extends Component {
 
     return (
       <div>
-        <InjectingContent active={active} />
+        {/* The injection! Nothing gets rendered here. */}
+        <HeaderInjection active={active} />
+
+        <div>
+          <p>I am page one.</p>
+          <p>My State is {active ? `active` : `inactive`}</p>
+        </div>
 
         <button onClick={this.onClick}>Change my state</button>
       </div>

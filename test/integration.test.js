@@ -1,36 +1,37 @@
 import React, { PropTypes } from 'react';
 import { describeWithDOM } from './jsdom';
 import { expect } from 'chai';
-import $ from 'teaspoon';
+import { mount } from 'enzyme';
 
 describeWithDOM(`Given an Injectables configuration`, () => {
-  const { Provider, Injectable, Injector } = require(`../src/index.js`);
+  const { InjectablesProvider, Injectable, Injector } = require(`../src/index.js`);
 
   let InjectableHeader;
   let Layout;
   let HeaderInjectingSectionOne;
   let HeaderInjectingSectionTwo;
+  let HeaderInjection;
   let render;
 
   before(() => {
-    render = elements => $(
-      <Provider>
+    render = elements => mount(
+      <InjectablesProvider>
         {elements}
-      </Provider>
-    ).render();
+      </InjectablesProvider>
+    );
 
-    const Header = ({ injected }) => (
+    const Header = ({ injections }) => (
       <div id="Header">
-        {injected}
+        {injections}
       </div>
     );
     Header.propTypes = {
-      injected: PropTypes.arrayOf(PropTypes.element).isRequired
+      injections: PropTypes.arrayOf(PropTypes.element).isRequired
     };
 
     InjectableHeader = Injectable(Header);
 
-    Layout = ({ children }) => (
+    Layout = ({ children }) => ( // eslint-disable-line react/prop-types
       <div id="Layout">
         <InjectableHeader />
         <div id="Main">
@@ -42,36 +43,17 @@ describeWithDOM(`Given an Injectables configuration`, () => {
       children: PropTypes.any
     };
 
-    const sectionOnePropTypes = {
-      message: PropTypes.string
-    };
-
-    const SectionOne = () => (
-      <div>
-        <h1>Section One</h1>
-      </div>
+    HeaderInjection = props => (
+      <div id="Injection">{props.message || `injection`}.</div> // eslint-disable-line
     );
-    SectionOne.propTypes = sectionOnePropTypes;
-
-    const SectionOneHeaderInjection = props =>
-      <div id="Injection">Section One, {props.message}.</div>;
-    SectionOneHeaderInjection.propTypes = sectionOnePropTypes;
 
     HeaderInjectingSectionOne = Injector({
-      to: InjectableHeader,
-      inject: SectionOneHeaderInjection
-    })(SectionOne);
-
-    const SectionTwo = () => (
-      <div>
-        <h1>Section Two</h1>
-      </div>
-    );
+      into: InjectableHeader
+    })(HeaderInjection);
 
     HeaderInjectingSectionTwo = Injector({
-      to: InjectableHeader,
-      inject: <div id="Injection">Section Two Header Injection.</div>
-    })(SectionTwo);
+      into: InjectableHeader
+    })(HeaderInjection);
   });
 
   describe(`When the injector is rendered as a child of the injectable`, () => {
@@ -87,9 +69,10 @@ describeWithDOM(`Given an Injectables configuration`, () => {
 
     it(`Then the injected content should have been rendered in the header`, () => {
       const expected = 1;
+
       const actual = rendered
-        .find($.s`${InjectableHeader}`)
-        .find(`div[id=Injection]`)
+        .find(InjectableHeader)
+        .find(HeaderInjection)
         .length;
 
       expect(actual).to.equal(expected, `The injected content was not found.`);
@@ -111,8 +94,8 @@ describeWithDOM(`Given an Injectables configuration`, () => {
     it(`Then the injected content should have been rendered in the header`, () => {
       const expected = 1;
       const actual = rendered
-        .find($.s`${InjectableHeader}`)
-        .find(`div[id=Injection]`)
+        .find(InjectableHeader)
+        .find(HeaderInjection)
         .length;
 
       expect(actual).to.equal(expected, `The injected content was not found.`);
@@ -136,8 +119,8 @@ describeWithDOM(`Given an Injectables configuration`, () => {
     it(`Then the injected content should have been rendered in the header`, () => {
       const expected = 1;
       const actual = rendered
-        .find($.s`${InjectableHeader}`)
-        .find(`div[id=Injection]`)
+        .find(InjectableHeader)
+        .find(HeaderInjection)
         .length;
 
       expect(actual).to.equal(expected, `The injected content was not found.`);
@@ -163,8 +146,8 @@ describeWithDOM(`Given an Injectables configuration`, () => {
     it(`Then the injected content should have been rendered in the header`, () => {
       const expected = 2;
       const actual = rendered
-        .find($.s`${InjectableHeader}`)
-        .find(`div[id=Injection]`)
+        .find(InjectableHeader)
+        .find(HeaderInjection)
         .length;
 
       expect(actual).to.equal(expected, `The injected content was not found.`);
@@ -174,9 +157,8 @@ describeWithDOM(`Given an Injectables configuration`, () => {
   describe(`When rendering a null/undefined from an Injector`, () => {
     it(`Then nothing should be rendered`, () => {
       const NullInjector = Injector({
-        to: InjectableHeader,
-        inject: () => null
-      })(() => <noscript />);
+        into: InjectableHeader
+      })(() => null);
 
       const rendered = render(
         <Layout>
@@ -185,12 +167,11 @@ describeWithDOM(`Given an Injectables configuration`, () => {
       );
 
       const actual = rendered
-        .find($.s`${InjectableHeader}`)
-        .find(`div[id=Header]`)
-        .children()
-        .length;
+        .find(InjectableHeader)
+        .html();
 
-      expect(actual).to.equal(0);
+      expect(actual)
+        .to.match(/^<div id="Header"><!-- react-empty: [\d]+ --><\/div>$/);
     });
   });
 });

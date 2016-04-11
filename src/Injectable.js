@@ -3,7 +3,7 @@ import { containsUniq, keyedElements } from './utils';
 
 let injectionIdIndex = 0;
 
-const Injectable = (WrappedComponent) => {
+const Injectable = (VeinComponent) => {
   injectionIdIndex++;
   const injectionId = `injectionId_${injectionIdIndex}`;
 
@@ -16,36 +16,37 @@ const Injectable = (WrappedComponent) => {
     };
 
     state = {
-      injected: []
+      injections: []
     }
 
     componentWillMount() {
       this.context.registerInjectable({
         injectionId,
-        injectable: this
+        injectableInstance: this,
+        receive: (elements) => this.consume(elements)
       });
     }
 
     componentWillUnmount() {
       this.context.removeInjectable({
         injectionId,
-        injectable: this
+        injectableInstance: this
       });
     }
 
     consume = (elements) => {
-      if (elements.length !== this.state.injected.length ||
-          containsUniq(this.state.injected, elements)) {
-        this.setState({ injected: elements });
+      if (elements.length !== this.state.injections.length ||
+          containsUniq(this.state.injections, elements)) {
+        this.setState({ injections: elements });
       }
     }
 
     render() {
-      const keyed = keyedElements(`injected`, this.state.injected);
+      const keyed = keyedElements(`injections`, this.state.injections);
 
       return (
-        <WrappedComponent
-          injected={keyed}
+        <VeinComponent
+          injections={keyed}
           {...this.props}
         />
       );

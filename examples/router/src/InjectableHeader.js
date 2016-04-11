@@ -2,17 +2,17 @@ import React, { PropTypes } from 'react';
 import { Injectable } from '../../../src/index.js';
 
 // Prep a header component which we intend to make injectable.
-// Note the prop named 'injected'.  This will contain any injected elements.
-const Header = ({ injected }) => (
+// Note the prop named 'injections'.  This will contain any injected elements.
+const Header = ({ injections }) => (
   <div style={{ backgroundColor: `red`, color: `white` }}>
     <h1>INJECTABLE HEADER</h1>
     <div>
-      {injected.length > 0 ? injected : <div>Nothing has been injected</div>}
+      {injections.length > 0 ? injections : <div>Nothing has been injected</div>}
     </div>
   </div>
 );
 Header.propTypes = {
-  injected: PropTypes.arrayOf(PropTypes.element)
+  injections: PropTypes.arrayOf(PropTypes.element)
 };
 
 // Convert our header into an injectable!

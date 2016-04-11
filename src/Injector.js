@@ -1,16 +1,36 @@
 import React, { PropTypes, Component } from 'react';
+import invariant from 'invariant';
 
-type Inject = Object | (props: Object) => Object;
+const invalidTargetMsg =
+  `Invalid Injectable target. Please provide a Component that has been wrapped ` +
+  `Injectable wrapped Component.`;
+const invalidInjectMsg =
+  `Invalid injection value provided into Injector. You must supply a Component ` +
+  `or stateless Component.`;
 
 let injectorIndex = 0;
 
-const Injector = (args: { to: Object, inject: Inject }) => {
-  const { to, inject } = args;
+const Injector = ({ into } = {}) => {
+  invariant(
+    into &&
+    typeof into === `function` &&
+    into.injectionId &&
+    into.contextTypes &&
+    into.contextTypes.registerInjectable &&
+    into.contextTypes.removeInjectable,
+    // Error message
+    invalidTargetMsg);
 
   injectorIndex++;
   const injectorId = `injector_${injectorIndex}`;
 
-  return function WrapComponent(WrappedComponent) {
+  return function WrapComponent(InjectionComponent) {
+    invariant(
+      InjectionComponent &&
+      typeof InjectionComponent === `function`,
+      invalidInjectMsg
+    );
+
     class InjectorComponent extends Component {
       static contextTypes = {
         registerInjector: PropTypes.func.isRequired,
@@ -20,40 +40,32 @@ const Injector = (args: { to: Object, inject: Inject }) => {
 
       componentWillMount() {
         this.context.registerInjector({
-          injectionId: to.injectionId,
+          injectionId: into.injectionId,
           injectorId,
-          injector: this,
-          inject: () => {
-            if (typeof inject === `function`) {
-              return inject(this.props);
-            }
-            return inject;
-          }
+          injectorInstance: this,
+          inject: () => <InjectionComponent {...this.props} />
         });
       }
 
       componentWillUpdate(nextProps) {
         this.context.updateInjector({
-          injectionId: to.injectionId,
-          injector: this,
-          inject: () => {
-            if (typeof inject === `function`) {
-              return inject(nextProps);
-            }
-            return inject;
-          }
+          injectionId: into.injectionId,
+          injectorId,
+          injectorInstance: this,
+          inject: () => <InjectionComponent {...nextProps} />
         });
       }
 
       componentWillUnmount() {
         this.context.removeInjector({
-          injectionId: to.injectionId,
-          injector: this
+          injectionId: into.injectionId,
+          injectorId,
+          injectorInstance: this
         });
       }
 
       render() {
-        return (<WrappedComponent {...this.props} />);
+        return null;
       }
     }
 

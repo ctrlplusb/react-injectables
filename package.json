@@ -1,7 +1,7 @@
 {
   "name": "react-injectables",
   "version": "1.0.0",
-  "description": "Explicitly inject Elements into any part of your React render tree.",
+  "description": "Explicitly inject Components into any part of your React render tree.",
   "main": "lib/react-injectables.js",
   "scripts": {
     "prebuild": "rm -rf lib && mkdir lib",

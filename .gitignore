@@ -1,5 +1,5 @@
 # Webpack stats file output used for bundle optimisation.
-webpack-stats.json
+lib/stats.json
 
 #####=== Node ===#####
 

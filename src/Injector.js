@@ -21,15 +21,15 @@ const Injector = ({ into } = {}) => {
     // Error message
     invalidTargetMsg);
 
-  injectorIndex++;
-  const injectorId = `injector_${injectorIndex}`;
-
   return function WrapComponent(InjectionComponent) {
     invariant(
       InjectionComponent &&
       typeof InjectionComponent === `function`,
       invalidInjectMsg
     );
+
+    injectorIndex++;
+    const injectorId = `injector_${injectorIndex}`;
 
     class InjectorComponent extends Component {
       static contextTypes = {

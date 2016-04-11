@@ -45,29 +45,31 @@ Injectables aims to provide you with a mechanism to explicity define `Injectable
 With Injectables you can easily inject a Component into the `Sidebar` when your `ProductPage` Component gets mounted. Here is a partial example of this:
 
 ```javascript
-const MyBasketSidebarInjection = Injector({ 
-  into: InjectableSidebar
-})(MyBasket)
+import { SidebarInjector } from '../InjectableSidebar';
+import MyBasket from '../MyBasket';
 
-class ProductsPage extends Component {
-  ...
-  
+const MyBasketSidebarInjection = SidebarInjector(MyBasket);
+
+class ProductPage extends Component {
   render() {
   	return (
   		<div>
-          <MyBasketSidebarInjection />
+         {/* MyBasket will get injected into Sidebar! */}
+         <MyBasketSidebarInjection /> 
   		
-          <h1>Product Page</h1>
-          ...
+         <h1>Product Page</h1>
+         ...
   		</div>
   	);
   }
 }
+
+export default ProductPage;
 ```
 
-Now every time the `ProductPage` Component is mounted the `MyBasket` Component will be injected into `Sidebar` Component. Ok, there is a bit of additional setup required, but the above is a basic overview of how easy it is to define your injections after the initial configuration.
+Now every time the `ProductPage` Component is mounted the `MyBasket` Component will be injected into `Sidebar` Component. Ok, there is a bit of additional setup required in the `Sidebar` Component, but the above is a basic overview of how easy it is to define your injections after the initial configuration.
 
-Yep, some fairy dust is involved, but we attempt to keep things as un-magical as possible, pushing for explictness whilst keeping it easy to use.
+Yes, a bit of fairy dust is involved, but we attempt to keep things as un-magical as possible, pushing for explictness whilst maintaining ease of use.
 
 
 ## Usage
@@ -126,20 +128,21 @@ function Sidebar({ injections }) {
 // We wrap our Sidebar component with Injectable. This does all the wiring up for us.
 const InjectableSidebar = Injectable(Sidebar);
 
-// Create a default Injector configuration export for our injectable sidebar.
+// Create a default Injector configuration for our injectable sidebar.
 // Our Components can use this helper to create injections for the sidebar.
+// NOTE: We are exporting this helper, it will come in handy for the next step.
 export const SidebarInjector = Injector({ into: InjectableSidebar });
 
 export default InjectableSidebar;
 ```
 
-Notice we also create a default `Injector` configuration for our `InjectableSidebar`.  This has been exported to allow our other Components to easily import and use this pre-configured helper.  It saves us having to repeat this configuration throughout every Component that wishes to do injections.
+Notice we also create a default `Injector` configuration for our `InjectableSidebar` called `SidebarInjector`.  This has been exported to allow our other Components to easily import and use this pre-configured helper - it saves us having to repeat this configuration thereby reducing errors.
     
-_Note:_ We recommend naming your component files appropriately to indicate that it is indeed an injectable component.  In the above case we named our component file as `InjectableSidebar.js`.  Forming conventions around the naming of your injectables and injectors will help.
+We recommend naming your component files appropriately to indicate that it is indeed an injectable component.  In the above case we named our component file as `InjectableSidebar.js`.  Forming your own conventions around the naming of your injectables and injectors will help.
     
 __Step 3__
 
-Ok, so you have an `InjectableSidebar` Component and a `SidebarInjector` helper function.  Now you need to declare a Component that will cause an injection to occur.
+Ok, so now you have an `InjectableSidebar` Component and a `SidebarInjector` helper function.  Next up you need to declare a Component that will cause an injection into the Sidebar to occur.
 
 ```javascript
 import React from 'react';
@@ -150,7 +153,7 @@ import MyBasketView from './MyBasketView';
 // MyBasketView Component into our InjectableSidebar Component.
 const MyBasketViewSidebarInjection = SidebarInjector(MyBasketView);
 
-class ProductsPage extends Component {
+class ProductPage extends Component {
    ....
    
    render() {
@@ -163,22 +166,20 @@ class ProductsPage extends Component {
              Notice how you can also pass down props into your injected component too. */}
          <MyBasketViewSidebarInjection focusOnProductId={this.props.productId} />
      	
-         <h1>Products Page</h1>
+         <h1>Product Page</h1>
+         
+         ...
      	</div>
      );
    }
 }
 
-export default ProductsPage;
+export default ProductPage;
 ```
  
- ---
- 
-And that's it. Any time the `ProductsPage` is mounted it will inject the `MyBasketView` Component into the `Sidebar`.  When it unmounts, the respective Component will be removed from the `Sidebar`.
+And that's it. Any time the `ProductPage` is mounted it will inject the `MyBasketView` Component into the `Sidebar`.  When the `ProductPage` unmounts, it's respective injected Component will be removed from the `Sidebar`.
  
 As you can see it's all explicit, so you can follow the import references to find out any relationships.  
-
-You will need to repeat steps 2 and 3 for any set of Injectable targets and Injector sources you would like to create.  Again, this is to keep things as explicit as possible.
 
 ## Properties of Injectables and Injectors
 

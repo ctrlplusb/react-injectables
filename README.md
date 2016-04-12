@@ -9,11 +9,16 @@
 [![Codecov](https://img.shields.io/codecov/c/github/ctrlplusb/react-injectables.svg?style=flat-square)](https://codecov.io/github/ctrlplusb/react-injectables)
 [![Maintenance](https://img.shields.io/maintenance/yes/2016.svg?style=flat-square)]()
 
-This is a teeny tiny React library - it's almost unnoticable when gzipped.
+* Uses React's natural render cycles, no DOM hacks.
+* Injections are handled synchronously, no double renders.
+* Supports props pass through to injected Components - behaviour++.
+* No magic strings in your code.  Explicitly define source and targets Components.
+* Works with React 0.14 and 15.
+* Micro library. Gzip it to nothingness.
 
 ## What is this for?
 
-Placeholders, Modals, etc.
+Content Placeholders, Modals, etc.
 
 ## Overview
 

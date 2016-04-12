@@ -12,9 +12,12 @@
 * Uses React's natural render cycles, no DOM hacks.
 * Injections are handled synchronously, no double renders.
 * Supports props pass through to injected Components - behaviour++.
-* No magic strings in your code.  Explicitly define source and targets Components.
+* No magic strings in your code.  Explicitly define source and target Components.
 * Works with React 0.14 and 15.
+* Extensive test coverage.
 * Micro library. Gzip it to nothingness.
+
+_Note: There have been a lot of releases recently, however, based on usage within my production cases I am happy with where the API is.  Please consider the API in a long term stable condition.  I shall make every attempt from now on to avoid any breaking changes._ 
 
 ## What is this for?
 

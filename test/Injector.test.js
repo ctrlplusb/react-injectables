@@ -4,11 +4,12 @@ import React, { Component } from 'react';
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { mount } from 'enzyme';
+import Injectable from '../src/Injectable';
+
+// Under test.
+import Injector from '../src/Injector';
 
 describe(`Given the Injector interface`, () => {
-  const Injector = require(`../src/Injector`).default;
-  const Injectable = require(`../src/Injectable`).default;
-
   describe(`When creating an Injector`, () => {
     let ValidInjectable;
 

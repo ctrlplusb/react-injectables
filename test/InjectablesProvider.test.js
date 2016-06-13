@@ -1,11 +1,13 @@
 import React from 'react';
 import { expect } from 'chai';
 
+// Under test.
+import Provider from '../src/InjectablesProvider';
+
 describe(`Given the Injectables Provider`, () => {
   let instance;
 
   beforeEach(() => {
-    const Provider = require(`../src/InjectablesProvider`).default;
     instance = new Provider();
   });
 
@@ -143,33 +145,6 @@ describe(`Given the Injectables Provider`, () => {
       });
 
     expect(duplicateRegister).to.throw(/An Injector instance is being registered multiple times/);
-  });
-
-  it(`Then a duplicate injector id registration should result in an warning`, () => {
-    const prevWarn = console.warn; // eslint-disable-line no-console
-    const warnings = [];
-    console.warn = (msg) => { warnings.push(msg); }; // eslint-disable-line no-console
-
-    // Register injector.
-    instance.registerInjector({
-      injectionId: `foo`,
-      injectorId: `injector1`,
-      injectorInstance: () => null,
-      inject: () => <div>injection</div>
-    });
-
-    // Register injector.
-    instance.registerInjector({
-      injectionId: `foo`,
-      injectorId: `injector1`,
-      injectorInstance: () => null,
-      inject: () => <div>injection</div>
-    });
-
-    expect(warnings.length).to.eql(1);
-    expect(warnings[0]).to.match(/Multiple instances of an Injector has been found/);
-
-    console.warn = prevWarn; // eslint-disable-line no-console
   });
 
   it(`Then multiple unique injectors should result in multiple injection changes`, () => {

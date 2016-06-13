@@ -3,9 +3,10 @@ import { describeWithDOM } from './jsdom';
 import { expect } from 'chai';
 import { mount } from 'enzyme';
 
-describeWithDOM(`Given an Injectables configuration`, () => {
-  const { InjectablesProvider, Injectable, Injector } = require(`../src/index.js`);
+// Under test.
+import { InjectablesProvider, Injectable, Injector } from '../src/index.js';
 
+describeWithDOM(`Given an Injectables configuration`, () => {
   let InjectableHeader;
   let Layout;
   let HeaderInjectingSectionOne;
@@ -47,13 +48,13 @@ describeWithDOM(`Given an Injectables configuration`, () => {
       <div id="Injection">{props.message || `injection`}.</div> // eslint-disable-line
     );
 
-    HeaderInjectingSectionOne = Injector({
+    const HeaderInjector = Injector({
       into: InjectableHeader
-    })(HeaderInjection);
+    });
 
-    HeaderInjectingSectionTwo = Injector({
-      into: InjectableHeader
-    })(HeaderInjection);
+    HeaderInjectingSectionOne = HeaderInjector(HeaderInjection);
+
+    HeaderInjectingSectionTwo = HeaderInjector(HeaderInjection);
   });
 
   describe(`When the injector is rendered as a child of the injectable`, () => {
@@ -102,32 +103,7 @@ describeWithDOM(`Given an Injectables configuration`, () => {
     });
   });
 
-  describe(`When rendering multiple of the same injector instance`, () => {
-    let rendered;
-
-    before(() => {
-      rendered = render(
-        <div>
-          <HeaderInjectingSectionOne />
-          <Layout>
-            <HeaderInjectingSectionOne />
-          </Layout>
-        </div>
-      );
-    });
-
-    it(`Then the injected content should have been rendered in the header`, () => {
-      const expected = 1;
-      const actual = rendered
-        .find(InjectableHeader)
-        .find(HeaderInjection)
-        .length;
-
-      expect(actual).to.equal(expected, `The injected content was not found.`);
-    });
-  });
-
-  describe(`When rendering different injectors targetting the same injectable`, () => {
+  describe(`When rendering multiple injectors targetting the same injectable`, () => {
     let rendered;
 
     before(() => {
@@ -144,7 +120,7 @@ describeWithDOM(`Given an Injectables configuration`, () => {
     });
 
     it(`Then the injected content should have been rendered in the header`, () => {
-      const expected = 2;
+      const expected = 4;
       const actual = rendered
         .find(InjectableHeader)
         .find(HeaderInjection)

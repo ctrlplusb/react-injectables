@@ -60,8 +60,7 @@ class InjectablesProvider extends Component {
 
     const elements = compose(
       filter(x => x !== null && x !== undefined),
-      map(x => x.inject()),
-      uniqBy(`injectorId`)
+      map(x => x.inject())
     )(injections);
 
     injectables.forEach(injectable => {
@@ -130,16 +129,6 @@ class InjectablesProvider extends Component {
     invariant(
       !existingInjection,
       `An Injector instance is being registered multiple times.`);
-
-    if (process.env.NODE_ENV !== `production`) {
-      const existingInjector = this.findInjector({ registration, injectorId });
-
-      if (existingInjector && console && console.warn) { // eslint-disable-line no-console
-        console.warn( // eslint-disable-line no-console
-          `Multiple instances of an Injector has been found.  This may not be ` +
-          `your intended behaviour`);
-      }
-    }
 
     const newInjection = {
       injectorId,

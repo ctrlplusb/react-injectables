@@ -1,5 +1,5 @@
 import { Children, Component, PropTypes } from 'react';
-import { compose, find, filter, map, uniqBy, without, withoutAll } from './utils';
+import { compose, find, filter, map, without, withoutAll } from './utils';
 import invariant from 'invariant';
 
 class InjectablesProvider extends Component {

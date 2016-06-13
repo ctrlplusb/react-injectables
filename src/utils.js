@@ -48,22 +48,6 @@ export const withoutAll = (toRemove) => (point) =>
       (x) => all(y => !Object.is(x, y))(toRemove)
     )(point);
 
-// :: a -> [b]
-export const uniqBy = x => y => {
-  const checked = new Set();
-  const result = [];
-
-  y.forEach(a => {
-    const prop = a[x];
-    if (!checked.has(prop)) {
-      checked.add(prop);
-      result.push(a);
-    }
-  });
-
-  return result;
-};
-
 /**
  * :: [a] -> [a] -> boolean
  *
@@ -108,7 +92,7 @@ function KeyedComponent({ children }) {
  *
  * @return The keyed react elements.
  */
-export function keyedElements(prefix : string, items : Array<Object>) {
+export function keyedElements(prefix, items) {
   let index = 0;
   return items.map(x => {
     index++;

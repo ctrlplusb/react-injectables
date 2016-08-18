@@ -64,7 +64,7 @@
     "sinon": "1.17.3",
     "sinon-chai": "2.8.0",
     "stats-webpack-plugin": "0.3.1",
-    "webpack": "1.12.15"
+    "webpack": "1.13.2"
   },
   "peerDependencies": {
     "react": "^0.14.0 || ^15.0.0"

@@ -1,3 +1,10 @@
+💀 ___DEPRECATED___ 💀
+
+I have given up on this library. Sorry.
+
+Good news though, it sounds like portals may become a first class citizen when React Fiber lands. 🎉
+---
+
 <p align='center'>
   <img src='https://raw.githubusercontent.com/ctrlplusb/react-injectables/master/assets/logo.png' width='350'/>
   <p align='center'>Explicitly inject Components to any part of your React render tree</p>

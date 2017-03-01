@@ -124,6 +124,44 @@ describe(`Given the Injector interface`, () => {
         .to.equal(`<div><div>injection 1</div><div>injection 2</div></div>`);
     });
 
+    it(`It should sort consumed injections if an position property exists`, () => {
+      const mounted = mount(<InjectableComponentBob />, { context });
+
+      const dummy = ({children}) => (<div>{children}</div>);
+      const injectionOne = <dummy position={1}>injection 1</dummy>;
+      const injectionTwo = <dummy position={2}>injection 2</dummy>;
+      const injectionThree = <dummy position={3}>injection 3</dummy>;
+
+      mounted.instance().consume([
+        injectionTwo,
+        injectionThree,
+        injectionOne
+      ]);
+
+      expect(mounted.state(`injections`)).to.eql([injectionOne, injectionTwo, injectionThree]);
+      expect(mounted.html())
+          .to.equal(`<div><dummy>injection 1</dummy><dummy>injection 2</dummy><dummy>injection 3</dummy></div>`);
+    });
+
+    it(`It should sort consumed injections without an position property to the end`, () => {
+      const mounted = mount(<InjectableComponentBob />, { context });
+
+      const dummy = ({children}) => (<div>{children}</div>);
+      const injectionOne = <dummy position={1}>injection 1</dummy>;
+      const injectionTwo = <dummy position={2}>injection 2</dummy>;
+      const injectionThree = <dummy>injection 3</dummy>;
+
+      mounted.instance().consume([
+        injectionTwo,
+        injectionThree,
+        injectionOne
+      ]);
+
+      expect(mounted.state(`injections`)).to.eql([injectionOne, injectionTwo, injectionThree]);
+      expect(mounted.html())
+          .to.equal(`<div><dummy>injection 1</dummy><dummy>injection 2</dummy><dummy>injection 3</dummy></div>`);
+    });
+
     it(`It should not render duplicate elements`, () => {
       const mounted = mount(<InjectableComponentBob />, { context });
 

@@ -37,16 +37,15 @@ const Injectable = (VeinComponent) => {
     consume = (elements) => {
       if (elements.length !== this.state.injections.length ||
           containsUniq(this.state.injections, elements)) {
-        // eslint-disable-next-line no-console
         const sortedElements = elements.sort((a, b) => {
           if (typeof a.props.position !== `number`) {
             if (typeof b.props.position !== `number`) {
               return 0;
             }
-            return -1; // elements with a position property take preference
+            return 1;
           }
           if (typeof b.props.position !== `number`) {
-            return 1; // elements with a position property take preference
+            return -1;
           }
           return a.props.position - b.props.position;
         });

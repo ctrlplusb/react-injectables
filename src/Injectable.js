@@ -1,4 +1,5 @@
-import React, { PropTypes, Component } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { containsUniq, keyedElements } from './utils';
 
 let injectionIdIndex = 0;
@@ -37,7 +38,19 @@ const Injectable = (VeinComponent) => {
     consume = (elements) => {
       if (elements.length !== this.state.injections.length ||
           containsUniq(this.state.injections, elements)) {
-        this.setState({ injections: elements });
+        const sortedElements = elements.sort((a, b) => {
+          if (typeof a.props.position !== `number`) {
+            if (typeof b.props.position !== `number`) {
+              return 0;
+            }
+            return 1;
+          }
+          if (typeof b.props.position !== `number`) {
+            return -1;
+          }
+          return a.props.position - b.props.position;
+        });
+        this.setState({ injections: sortedElements });
       }
     }
 

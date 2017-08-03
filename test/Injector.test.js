@@ -4,11 +4,12 @@ import React, { Component } from 'react';
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { mount } from 'enzyme';
+import Injectable from '../src/Injectable';
+
+// Under test.
+import Injector from '../src/Injector';
 
 describe(`Given the Injector interface`, () => {
-  const Injector = require(`../src/Injector`).default;
-  const Injectable = require(`../src/Injectable`).default;
-
   describe(`When creating an Injector`, () => {
     let ValidInjectable;
 
@@ -50,16 +51,18 @@ describe(`Given the Injector interface`, () => {
     });
 
     it(`It should allow an React.createClass based component for the injection`, () => {
-      const CreateClassComponentInjection =
-        React.createClass({ // eslint-disable-line react/prefer-es6-class
-          state: { foo: `bar` },
-          render() {
-            return <div>foo</div>;
-          }
-        });
+      class ComponentInjectionClass extends React.Component {
+        constructor() {
+          super();
+          this.state = { foo: `bar` };
+        }
+        render() {
+          return <div>foo</div>;
+        }
+      }
       const InjectorBob = Injector({
         into: ValidInjectable
-      })(CreateClassComponentInjection);
+      })(ComponentInjectionClass);
       assertIsValidInjector(InjectorBob);
     });
   });

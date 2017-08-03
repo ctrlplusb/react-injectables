@@ -51,16 +51,18 @@ describe(`Given the Injector interface`, () => {
     });
 
     it(`It should allow an React.createClass based component for the injection`, () => {
-      const CreateClassComponentInjection =
-        React.createClass({ // eslint-disable-line react/prefer-es6-class
-          state: { foo: `bar` },
-          render() {
-            return <div>foo</div>;
-          }
-        });
+      class ComponentInjectionClass extends React.Component {
+        constructor() {
+          super();
+          this.state = { foo: `bar` };
+        }
+        render() {
+          return <div>foo</div>;
+        }
+      }
       const InjectorBob = Injector({
         into: ValidInjectable
-      })(CreateClassComponentInjection);
+      })(ComponentInjectionClass);
       assertIsValidInjector(InjectorBob);
     });
   });

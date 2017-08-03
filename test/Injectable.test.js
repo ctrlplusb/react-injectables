@@ -1,6 +1,7 @@
 /* eslint-disable react/no-multi-comp */
 
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { mount } from 'enzyme';
@@ -38,14 +39,16 @@ describe(`Given the Injector interface`, () => {
     });
 
     it(`It should allow use of a React.createClass based component`, () => {
-      const CreateClassComponent =
-        React.createClass({ // eslint-disable-line react/prefer-es6-class
-          state: { foo: `bar` },
-          render() {
-            return <div>foo</div>;
-          }
-        });
-      const InjectableBob = Injectable(CreateClassComponent);
+      class ComponentClass extends React.Component {
+        constructor() {
+          super();
+          this.state = { foo: `bar` };
+        }
+        render() {
+          return <div>foo</div>;
+        }
+      }
+      const InjectableBob = Injectable(ComponentClass);
       assertIsValidInjectable(InjectableBob);
     });
   });
@@ -127,10 +130,11 @@ describe(`Given the Injector interface`, () => {
     it(`It should sort consumed injections if an position property exists`, () => {
       const mounted = mount(<InjectableComponentBob />, { context });
 
-      const dummy = ({children}) => (<div>{children}</div>);
-      const injectionOne = <dummy position={1}>injection 1</dummy>;
-      const injectionTwo = <dummy position={2}>injection 2</dummy>;
-      const injectionThree = <dummy position={3}>injection 3</dummy>;
+      const Dummy = ({ children }) => (<div>{children}</div>);
+      Dummy.propTypes = { children: PropTypes.node.isRequired };
+      const injectionOne = <Dummy position={1}>injection 1</Dummy>;
+      const injectionTwo = <Dummy position={2}>injection 2</Dummy>;
+      const injectionThree = <Dummy position={3}>injection 3</Dummy>;
 
       mounted.instance().consume([
         injectionTwo,
@@ -140,16 +144,17 @@ describe(`Given the Injector interface`, () => {
 
       expect(mounted.state(`injections`)).to.eql([injectionOne, injectionTwo, injectionThree]);
       expect(mounted.html())
-          .to.equal(`<div><dummy>injection 1</dummy><dummy>injection 2</dummy><dummy>injection 3</dummy></div>`);
+        .to.equal(`<div><div>injection 1</div><div>injection 2</div><div>injection 3</div></div>`);
     });
 
     it(`It should sort consumed injections without an position property to the end`, () => {
       const mounted = mount(<InjectableComponentBob />, { context });
 
-      const dummy = ({children}) => (<div>{children}</div>);
-      const injectionOne = <dummy position={1}>injection 1</dummy>;
-      const injectionTwo = <dummy position={2}>injection 2</dummy>;
-      const injectionThree = <dummy>injection 3</dummy>;
+      const Dummy = ({ children }) => (<div>{children}</div>);
+      Dummy.propTypes = { children: PropTypes.node.isRequired };
+      const injectionOne = <Dummy position={1}>injection 1</Dummy>;
+      const injectionTwo = <Dummy position={2}>injection 2</Dummy>;
+      const injectionThree = <Dummy>injection 3</Dummy>;
 
       mounted.instance().consume([
         injectionTwo,
@@ -159,7 +164,7 @@ describe(`Given the Injector interface`, () => {
 
       expect(mounted.state(`injections`)).to.eql([injectionOne, injectionTwo, injectionThree]);
       expect(mounted.html())
-          .to.equal(`<div><dummy>injection 1</dummy><dummy>injection 2</dummy><dummy>injection 3</dummy></div>`);
+        .to.equal(`<div><div>injection 1</div><div>injection 2</div><div>injection 3</div></div>`);
     });
 
     it(`It should not render duplicate elements`, () => {

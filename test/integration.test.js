@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import { describeWithDOM } from './jsdom';
 import { expect } from 'chai';
 import { mount } from 'enzyme';
